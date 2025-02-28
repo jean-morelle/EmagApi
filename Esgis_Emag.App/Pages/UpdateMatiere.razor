@@ -1,0 +1,58 @@
+﻿@using EmagApi.Core.ServicesProvider.Interfaces
+@using EmagApi.Domain.Models
+@page "/UpdateMatiere/{Id:int}"
+
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        <EditForm Model="matiere" OnValidSubmit="UpdateMatieres">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            <div class="form-group">
+                <label class="control-label">Nom</label>
+                <InputText class="form-control" @bind-Value="matiere.Nom" />
+                <ValidationMessage For="@(() => matiere.Nom)" />
+            </div>
+            <br/>
+            <div class="form-group mb-3">
+                <button type="submit" class="btn btn-primary">Mettre à jour</button>
+                <button type="button" class="btn btn-secondary" @onclick="Cancel">Annuler</button>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private Matiere matiere { get; set; } = new();
+
+    [Inject]
+    private NavigationManager navigationManager { get; set; } = default!;
+
+    [Inject]
+    private IMatiereServices matiereServices { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (matiereServices is not null)
+        {
+            matiere = await matiereServices.GetMatiereByIdAsync(Id) ?? new Matiere();
+        }
+    }
+
+    private async Task UpdateMatieres()
+    {
+        if (matiereServices is not null)
+        {
+            await matiereServices.UpdateMatiereAsync(matiere);
+            navigationManager.NavigateTo("/GetAllMatiere");
+        }
+    }
+
+    private void Cancel()
+    {
+        navigationManager.NavigateTo("/GetAllMatiere");
+    }
+}

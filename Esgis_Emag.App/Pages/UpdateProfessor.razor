@@ -1,0 +1,109 @@
+﻿@using EmagApi.Core.ServicesProvider.Interfaces
+@using EmagApi.Domain.Models
+@page "/UpdateProfessor/{Id:int}"
+
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        <EditForm Model="professeur" OnValidSubmit="UpdateProfessors">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label">Genre</label>
+                            <InputSelect class="form-control" @bind-Value="@professeur.Sexe">
+                                <option value="">-- Sélectionner --</option>
+                                <option value="Monsieur">Monsieur</option>
+                                <option value="Madame">Madame</option>
+                            </InputSelect>
+                            <ValidationMessage For="@(() => professeur.Sexe)" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label">Nom</label>
+                            <InputText class="form-control" @bind-Value="@professeur.Nom" />
+                            <ValidationMessage For="@(() => professeur.Nom)" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label">Prénom</label>
+                            <InputText class="form-control" @bind-Value="@professeur.Prenom" />
+                            <ValidationMessage For="@(() => professeur.Prenom)" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label">Date de naissance</label>
+                            <InputDate class="form-control" @bind-Value="@professeur.DateDeNaissance" />
+                            <ValidationMessage For="@(() => professeur.DateDeNaissance)" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label">Adresse</label>
+                            <InputText class="form-control" @bind-Value="@professeur.Adresse" />
+                            <ValidationMessage For="@(() => professeur.Adresse)" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label">Numéro de téléphone</label>
+                            <InputText class="form-control" @bind-Value="@professeur.Telephone" />
+                            <ValidationMessage For="@(() => professeur.Telephone)" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label">Diplôme</label>
+                            <InputText class="form-control" @bind-Value="@professeur.DernierDiplome" />
+                            <ValidationMessage For="@(() => professeur.DernierDiplome)" />
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group mt-3">
+                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+                    <button type="button" @onclick="Cancel" class="btn btn-danger">Retour</button>
+                </div>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private Professeur professeur { get; set; } = new();
+
+    [Inject]
+    private NavigationManager navigationManager { get; set; } = default!;
+
+    [Inject]
+    private IProfesseurServices professeurService { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (professeurService is not null)
+        {
+            professeur = await professeurService.GetProfesseurByIdAsync(Id) ?? new Professeur();
+        }
+    }
+
+    private async Task UpdateProfessors()
+    {
+        if (professeurService is not null)
+        {
+            await professeurService.UpdateProfesseurAsync(professeur);
+            navigationManager.NavigateTo("/GetAllProfessors");
+        }
+    }
+
+    private void Cancel()
+    {
+        navigationManager.NavigateTo("/GetAllProfessors");
+    }
+}
