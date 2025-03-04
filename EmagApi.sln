@@ -13,7 +13,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmagApi.Application", "Emag
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmagApi.Core", "EmagApi.Core\EmagApi.Core.csproj", "{FC4E4244-2135-4071-B9D6-CCFBFA08DDBD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Esgis_Emag.App", "Esgis_Emag.App\Esgis_Emag.App.csproj", "{E615BCC7-0F87-4757-A673-A82B3DBF8B92}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Esgis_Emarg", "Esgis_Emarg\Esgis_Emarg.csproj", "{A568A5D0-F19E-40B3-91AA-7927BE81C269}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,10 +41,10 @@ Global
 		{FC4E4244-2135-4071-B9D6-CCFBFA08DDBD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FC4E4244-2135-4071-B9D6-CCFBFA08DDBD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FC4E4244-2135-4071-B9D6-CCFBFA08DDBD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E615BCC7-0F87-4757-A673-A82B3DBF8B92}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E615BCC7-0F87-4757-A673-A82B3DBF8B92}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E615BCC7-0F87-4757-A673-A82B3DBF8B92}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E615BCC7-0F87-4757-A673-A82B3DBF8B92}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A568A5D0-F19E-40B3-91AA-7927BE81C269}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A568A5D0-F19E-40B3-91AA-7927BE81C269}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A568A5D0-F19E-40B3-91AA-7927BE81C269}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A568A5D0-F19E-40B3-91AA-7927BE81C269}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

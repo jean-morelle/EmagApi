@@ -1,5 +1,7 @@
 ﻿using EmagApi.Core.ServicesProvider.Interfaces;
 using EmagApi.Domain.Models;
+using System.Net;
+using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
 
@@ -52,6 +54,41 @@ namespace EmagApi.Core.ServicesProvider
         public async Task<Professeur?> GetProfesseurByIdAsync(int id)
         {
             return await httpClient.GetFromJsonAsync<Professeur>($"{ProfesseurUri}/{id}");
+        }
+
+        public async Task<Professeur?> GetProfesseurDetailsByNomAsync(string? nom)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(nom))
+                {
+                    Console.WriteLine("⚠️ ERREUR : Le nom du professeur est vide !");
+                    return null;
+                }
+
+                var encodedNom = Uri.EscapeDataString(nom.Trim());
+                var url = $"{ProfesseurUri}/{encodedNom}";
+
+                Console.WriteLine($"📡 Envoi de la requête GET vers : {url}");
+
+                var response = await httpClient.GetAsync(url);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return await response.Content.ReadFromJsonAsync<Professeur>();
+                }
+                else
+                {
+                    string errorMessage = await response.Content.ReadAsStringAsync();
+                    Console.WriteLine($"❌ Erreur {response.StatusCode}: {errorMessage}");
+                    return null;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"🚨 Exception : {ex.Message}");
+                return null;
+            }
         }
 
         public async Task UpdateProfesseurAsync(Professeur professeur)

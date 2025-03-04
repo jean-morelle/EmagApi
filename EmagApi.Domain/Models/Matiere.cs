@@ -10,6 +10,8 @@ namespace EmagApi.Domain.Models
     {
         public int Id { get; set; }
         public string? Nom { get; set; }
+      //  public int FiliereId { get; set; }
+       // public Filiere Filiere { get; set; }
         public List<SeanceMatiere> SeanceMatieres { get; set; } = new List<SeanceMatiere>();
     }
 }

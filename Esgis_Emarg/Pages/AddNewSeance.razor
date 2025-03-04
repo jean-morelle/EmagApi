@@ -1,0 +1,101 @@
+﻿@page "/AddNewSeance"
+@using EmagApi.Core.ServicesProvider.Interfaces
+@using EmagApi.Domain.Models
+@inject NavigationManager NavigationManager
+@inject ISeanceServices SeanceServices
+@inject IProfesseurServices ProfesseurServices
+
+<hr />
+<div class="row">
+    <div class="col-md-6">
+        <EditForm Model="seance" OnValidSubmit="CreateSeance">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <!-- Date de la séance -->
+            <div class="form-group">
+                <label class="control-label">Date de séance</label>
+                <InputDate class="form-control" @bind-Value="@seance.Date" />
+                <ValidationMessage For="()=>seance.Date" />
+            </div>
+
+            <!-- Sélection du professeur -->
+            <div class="form-group">
+                <label class="control-label">Professeur</label>
+                <InputSelect class="form-control" @bind-Value="@seance.ProfesseurId">
+                    <option value="">-- Sélectionnez un professeur --</option>
+                    @foreach (var prof in professeurs)
+                    {
+                        <option value="@prof.Id">@prof.Nom</option>
+                    }
+                </InputSelect>
+                <ValidationMessage For="()=>seance.ProfesseurId" />
+            </div>
+
+            <!-- Lieu de la séance -->
+            <div class="form-group">
+                <label class="control-label">Lieu</label>
+                <InputText class="form-control" @bind-Value="@seance.Lieu" />
+                <ValidationMessage For="()=>seance.Lieu" />
+            </div>
+
+            <!-- Nombre d'heures -->
+            <div class="form-group">
+                <label class="control-label">Nombre d'heures</label>
+                <InputNumber class="form-control" @bind-Value="@seance.NombreHeure" />
+                <ValidationMessage For="()=>seance.NombreHeure" />
+            </div>
+
+            <!-- Séance tenue -->
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <InputCheckbox class="form-check-input" @bind-Value="@seance.SeanceTenue" />
+                    Séance tenue ?
+                </label>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Date de commencement</label>
+                <InputDate class="form-control" @bind-Value="@seance.CommencerA" />
+                <ValidationMessage For="()=>seance.CommencerA" />
+            </div>
+            <div class="form-group">
+                <label class="control-label">Date de Fin</label>
+                <InputDate class="form-control" @bind-Value="@seance.TerminerA" />
+                <ValidationMessage For="()=>seance.TerminerA" />
+            </div>
+            <!-- Boutons -->
+            <div class="form-group mt-4">
+                <button type="submit" class="btn btn-primary">Enregistrer</button>
+                <button type="button" @onclick="Cancel" class="btn btn-danger">Retour</button>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    private Seance seance { get; set; } = new();
+    private List<Professeur> professeurs = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Chargement de la liste des professeurs
+        if (ProfesseurServices is not null)
+        {
+            professeurs = await ProfesseurServices.GetAllProfesseursAsync();
+        }
+    }
+
+    private async Task CreateSeance()
+    {
+        if (SeanceServices is not null)
+        {
+            await SeanceServices.AddSeanceAsync(seance);
+            NavigationManager.NavigateTo("/GetAllSeance");
+        }
+    }
+
+    private void Cancel()
+    {
+        NavigationManager.NavigateTo("/GetAllSeance");
+    }
+}

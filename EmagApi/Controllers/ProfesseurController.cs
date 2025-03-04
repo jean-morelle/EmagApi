@@ -25,6 +25,37 @@ namespace EmagApi.Controllers
           var professeur = await professeurServices.GetAllProfesseursAsync();
             return Ok(professeur);
         }
+
+        [HttpGet("details/{nom}")]
+        public async Task<IActionResult> GetProfesseurDetailsByNomAsync(string nom)
+        {
+            try
+            {
+                // Vérifier si le nom est valide ou non vide
+                if (string.IsNullOrWhiteSpace(nom))
+                {
+                    return BadRequest(new { Message = "Le nom du professeur ne peut pas être vide." });
+                }
+
+                // Appeler le service pour récupérer les détails du professeur
+                var professeur = await professeurServices.GetProfesseurDetailsByNomAsync(nom);
+
+                if (professeur == null)
+                {
+                    // Si le professeur n'est pas trouvé, retourner une réponse 404 avec un message explicite
+                    return NotFound(new { Message = $"Aucun professeur trouvé avec le nom : {nom}" });
+                }
+
+                // Si trouvé, retourner les détails du professeur
+                return Ok(professeur);
+            }
+            catch (Exception ex)
+            {
+                // En cas d'erreur, retourner une réponse 500 (Internal Server Error) avec un message d'erreur générique
+                return StatusCode(500, new { Message = "Une erreur interne est survenue.", Details = ex.Message });
+            }
+        }
+
         [HttpGet("{Id}")]
         public async Task<IActionResult> GetProfesseurByIdAsync(int Id)
         {

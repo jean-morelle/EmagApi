@@ -53,6 +53,35 @@ namespace EmagApi.Infrastructure.Repertory
             return professeur;
         }
 
+        public async Task<Professeur> GetProfesseurDetailsByNomAsync(string nom)
+        {
+            var professeur = await dbContext.Professeurs
+                .Where(p => p.Nom.Contains(nom))
+                .Include(p => p.Seances) // Inclure les séances du professeur
+                .ThenInclude(s => s.SeanceMatieres) // Inclure la table de jonction des matières
+                .ThenInclude(sm => sm.Matiere) // Inclure les matières associées à la séance
+                .FirstOrDefaultAsync(); // Récupérer le premier professeur trouvé
+
+            if (professeur != null)
+            {
+                // Charger les filières des matières associées
+                foreach (var seance in professeur.Seances)
+                {
+                    foreach (var seanceMatiere in seance.SeanceMatieres)
+                    {
+                        var matiere = seanceMatiere.Matiere;
+                        // Charger la filière pour chaque matière
+                        //await dbContext.Entry(matiere).Reference(m => m.Filiere).LoadAsync();
+                    }
+                }
+            }
+
+            return professeur; // Retourner l'objet Professeur avec ses relations et filières chargées
+        }
+
+
+
+
         public Task UpdateProfesseurAsync(Professeur professeur)
         {
            dbContext.Professeurs.Update(professeur);

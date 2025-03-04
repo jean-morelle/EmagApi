@@ -13,7 +13,11 @@ namespace EmagApi.Application.Profils
     {
         public SeanceProfile()
         {
-            CreateMap<Seance,SeanceDto>();
+            CreateMap<Seance,SeanceDto>()
+             .ForMember(dest => dest.ProfesseurNom, opt => opt.MapFrom(src => src.Professeur.Nom))
+                .ForMember(dest => dest.NombreHeure, opt => opt.MapFrom(src => src.CalculerNombreHeures()));
+            CreateMap<Seance,ReadSeanceDto>();
+            CreateMap<ReadSeanceDto,Seance>();
             CreateMap<SeanceDto,Seance>();
             CreateMap<Seance, AddSeanceDto>();
             CreateMap<AddSeanceDto, Seance>();

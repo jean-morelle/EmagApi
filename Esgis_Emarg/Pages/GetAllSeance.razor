@@ -1,0 +1,153 @@
+﻿@page "/GetAllSeance"
+@using EmagApi.Core.ServicesProvider.Interfaces
+@using EmagApi.Domain.Models
+@inject NavigationManager NavigationManager
+@inject ISeanceServices SeanceServices
+@inject IJSRuntime JS
+
+<div class="container my-4">
+    <div class="row">
+        <div class="col-12 text-end mb-4">
+            <button class="btn btn-success" @onclick="AddNewSeance">Ajouter une séance</button>
+        </div>
+
+        <div class="col-12">
+            @if (IsLoading)
+            {
+                <p><em>Chargement des séances...</em></p>
+            }
+            else if (!AllSeance.Any())
+            {
+                <div class="alert alert-info">Il n'y a pas encore de séances enregistrées.</div>
+            }
+            else
+            {
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Liste des Séances</h5>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Date de la séance</th>
+                                    <th>Nom du professeur</th>
+                                    <th>Lieu</th>
+                                    <th>Nombre d'heures</th>
+                                    <th>Séance tenue</th>
+                                    <th>Heure de commencement</th>
+                                    <th>Heure de fin</th>
+                                    <th>Heure total</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var seance in PaginatedSeance)
+                                {
+                                    <tr>
+                                        <td>@seance.Date.ToShortDateString()</td>
+                                        <td>@(seance.Professeur?.Nom ?? "Inconnu")</td>
+                                        <td>@seance.Lieu</td>
+                                        <td>@seance.NombreHeure</td>
+                                        <td>@(seance.SeanceTenue ? "Oui" : "Non")</td>
+                                        <td>@seance.CommencerA</td>
+                                        <td>@seance.TerminerA</td>
+                                        <td>@seance.CalculerNombreHeures()</td>
+                                        <td class="text-end">
+                                            <button class="btn btn-warning" @onclick="() => EditSeance(seance.Id)">Modifier</button>
+                                            <button class="btn btn-danger" @onclick="() => DeleteSeance(seance.Id)">Supprimer</button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+
+                        <div class="d-flex justify-content-between align-items-center">
+                            <button class="btn btn-secondary" @onclick="PreviousPage" disabled="@(CurrentPage <= 1)">Précédent</button>
+                            <span>Page @CurrentPage sur @TotalPages</span>
+                            <button class="btn btn-primary" @onclick="NextPage" disabled="@(CurrentPage >= TotalPages)">Suivant</button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<Seance> AllSeance { get; set; } = new();
+    private List<Seance> PaginatedSeance => AllSeance.Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToList();
+    private int CurrentPage { get; set; } = 1;
+    private int PageSize { get; set; } = 10;
+    private int TotalPages => (int)Math.Ceiling((double)AllSeance.Count / PageSize);
+    private bool IsLoading { get; set; } = true;
+
+    private void AddNewSeance()
+    {
+        NavigationManager.NavigateTo("/AddNewSeance");
+    }
+
+    private void EditSeance(int id)
+    {
+        NavigationManager.NavigateTo($"/UpdateSeance/{id}");
+    }
+
+    private async Task DeleteSeance(int id)
+    {
+        var confirmed = await JS.InvokeAsync<bool>("confirm", "Voulez-vous vraiment supprimer cette séance ?");
+        if (confirmed)
+        {
+            try
+            {
+                await SeanceServices.DeleteSeanceAsync(id);
+                await LoadSeance();
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"Erreur lors de la suppression : {ex.Message}");
+            }
+        }
+    }
+
+    private async Task LoadSeance()
+    {
+        try
+        {
+            IsLoading = true;
+            if (SeanceServices != null)
+            {
+                AllSeance = await SeanceServices.GetAllSeances();
+                CurrentPage = 1;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Erreur lors du chargement des séances : {ex.Message}");
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    private void NextPage()
+    {
+        if (CurrentPage < TotalPages)
+        {
+            CurrentPage++;
+        }
+    }
+
+    private void PreviousPage()
+    {
+        if (CurrentPage > 1)
+        {
+            CurrentPage--;
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadSeance();
+    }
+}

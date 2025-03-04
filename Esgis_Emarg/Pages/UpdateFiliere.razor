@@ -1,0 +1,58 @@
+﻿@using EmagApi.Core.ServicesProvider.Interfaces
+@using EmagApi.Domain.Models
+@page "/UpdateFiliere/{Id:int}"
+
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        <EditForm Model="filiere" OnValidSubmit="UpdateFilieres">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            <div class="form-group">
+                <label class="control-label">Nom</label>
+                <InputText class="form-control" @bind-Value="filiere.Nom" />
+                <ValidationMessage For="@(() => filiere.Nom)" />
+            </div>
+            <br />
+            <div class="form-group mb-3">
+                <button type="submit" class="btn btn-primary">Mettre à jour</button>
+                <button type="button" class="btn btn-secondary" @onclick="Cancel">Annuler</button>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private Filiere filiere { get; set; } = new();
+
+    [Inject]
+    private NavigationManager navigationManager { get; set; } = default!;
+
+    [Inject]
+    private IFiliereServices filiereServices { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (filiereServices is not null)
+        {
+            filiere = await filiereServices.GetFiliereByIdAsync(Id) ?? new Filiere();
+        }
+    }
+
+    private async Task UpdateFilieres()
+    {
+        if (filiereServices is not null)
+        {
+            await filiereServices.UpdateFiliereAsync(filiere);
+            navigationManager.NavigateTo("/GetAllFiliere");
+        }
+    }
+
+    private void Cancel()
+    {
+        navigationManager.NavigateTo("/GetAllFiliere");
+    }
+}

@@ -1,0 +1,142 @@
+﻿@page "/ProfesseurDetails"
+@using EmagApi.Core.ServicesProvider.Interfaces
+@using EmagApi.Domain.Models
+
+<div class="container my-4">
+    <h3>Recherche de Professeur</h3>
+    <input type="text" class="form-control" placeholder="Rechercher un professeur..." @bind="searchQuery" @oninput="SearchProfesseur" />
+
+    @if (professeur != null)
+    {
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5>Détails du Professeur</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Nom : </strong>@professeur.Nom</p>
+                <p><strong>Prénom : </strong>@professeur.Prenom</p>
+                <p><strong>Date de naissance : </strong>@professeur.DateDeNaissance.ToShortDateString()</p>
+                <p><strong>Adresse : </strong>@professeur.Adresse</p>
+                <p><strong>Téléphone : </strong>@professeur.Telephone</p>
+                <p><strong>Diplôme : </strong>@professeur.DernierDiplome</p>
+                <p><strong>Sexe : </strong>@(professeur.Sexe == 0 ? "Masculin" : "Féminin")</p>
+
+                <!-- Séances -->
+                <h6>Ses Séances</h6>
+                @if (professeur.Seances != null && professeur.Seances.Any())
+                {
+                    <table class="table table-striped mt-3">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Lieu</th>
+                                <th>Heures</th>
+                                <th>Commencer à</th>
+                                <th>Terminer à</th>
+                                <th>Matières</th>
+                                <th>Filières</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var seance in professeur.Seances)
+                            {
+                                <tr>
+                                    <td>@seance.Date.ToShortDateString()</td>
+                                    <td>@seance.Lieu</td>
+                                    <td>@seance.NombreHeure</td>
+                                    <td>@seance.CommencerA.ToShortDateString()</td>
+                                    <td>@seance.TerminerA.ToShortDateString()</td>
+
+                                    <!-- Matières et Filières -->
+                                    <td>
+                                        @if (seance.SeanceMatieres != null && seance.SeanceMatieres.Any())
+                                        {
+                                            <ul>
+                                                @foreach (var seanceMatiere in seance.SeanceMatieres)
+                                                {
+                                                    <li>
+                                                        <strong>@seanceMatiere.Matiere.Nom</strong>
+                                                    </li>
+                                                }
+                                            </ul>
+                                        }
+                                        else
+                                        {
+                                            <p>Aucune matière pour cette séance</p>
+                                        }
+                                    </td>
+
+                                    <td>
+                                        @if (seance.SeanceMatieres != null && seance.SeanceMatieres.Any())
+                                        {
+                                            <ul>
+                                                @foreach (var seanceMatiere in seance.SeanceMatieres)
+                                                {
+                                                    <li>
+                                                     @*    <strong>@seanceMatiere.Matiere.Filiere.Nom</strong> *@
+                                                    </li>
+                                                }
+                                            </ul>
+                                        }
+                                        else
+                                        {
+                                            <p>Aucune filière pour cette séance</p>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <p>Aucune séance trouvée pour ce professeur.</p>
+                }
+            </div>
+        </div>
+    }
+    else if (isLoading)
+    {
+        <p><em>Chargement des détails du professeur...</em></p>
+    }
+    else if (searchQuery.Length > 0)
+    {
+        <div class="alert alert-warning mt-4">
+            Aucun professeur trouvé pour ce nom.
+        </div>
+    }
+</div>
+
+@code {
+    private string searchQuery = string.Empty;
+    private Professeur? professeur = null;
+    private bool isLoading = false;
+
+    [Inject]
+    public IProfesseurServices professeurService { get; set; }
+
+    private async Task SearchProfesseur()
+    {
+        if (string.IsNullOrWhiteSpace(searchQuery))
+        {
+            professeur = null;
+            return;
+        }
+
+        isLoading = true;
+
+        try
+        {
+            professeur = await professeurService.GetProfesseurDetailsByNomAsync(searchQuery);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erreur: {ex.Message}");
+            professeur = null;
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+}

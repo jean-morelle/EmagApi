@@ -1,0 +1,48 @@
+﻿@page "/AddNewFiliere"
+@using EmagApi.Core.ServicesProvider.Interfaces
+@using EmagApi.Domain.Models
+
+<hr />
+<div class="row">
+    <div class="col-md-6">
+        <EditForm Model="filiere" OnValidSubmit="CreateFiliere">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="form-group">
+                <label class="control-label">Nom</label>
+                <InputText class="form-control" @bind-Value="@filiere.Nom" />
+                <ValidationMessage For="()=>filiere.Nom" />
+            </div>
+
+            <div class="form-group mt-4">
+                <button type="submit" class="btn btn-primary">Enregistrer</button>
+                <button type="button" @onclick="Cancel" class="btn btn-danger">Retour</button>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    private Filiere filiere { get; set; } = new();
+
+    [Inject]
+    private NavigationManager? navigationManager { get; set; }
+
+    [Inject]
+    private IFiliereServices? filiereServices { get; set; }
+
+    private async Task CreateFiliere()
+    {
+        if (filiereServices is not null)
+        {
+            await filiereServices.AddFiliereAsync(filiere);
+            navigationManager?.NavigateTo("/GetAllFiliere");
+        }
+    }
+
+    private void Cancel()
+    {
+        navigationManager?.NavigateTo("/GetAllFiliere");
+    }
+}

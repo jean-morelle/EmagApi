@@ -39,6 +39,22 @@ namespace EmagApi.Application.Services
             return professeur;
         }
 
+        public async Task<Professeur> GetProfesseurDetailsByNomAsync(string nom)
+        {
+            // Appeler le repository pour obtenir les détails du professeur
+            var professeur = await professeurRepertory.GetProfesseurDetailsByNomAsync(nom);
+
+            if (professeur == null)
+            {
+                // Si le professeur n'est pas trouvé, gérer l'exception ou retourner null
+                throw new Exception($"Aucun professeur trouvé avec le nom {nom}");
+            }
+
+            // Retourner le professeur avec toutes ses informations chargées
+            return professeur;
+        }
+
+
         public async Task UpdateProfesseurAsync(Professeur professeur)
         {
            await professeurRepertory.UpdateProfesseurAsync(professeur);

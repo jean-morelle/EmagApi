@@ -1,26 +1,27 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿<div class="sidebar text-white">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">Esgis_Emag.App</a>
+        <a class="navbar-brand" href="">BlazorApp1</a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
-            <span class="navbar-toggler-icon"></span>
+            <span class="oi oi-menu"></span>
         </button>
     </div>
 </div>
 
-<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+<div class="@NavMenuCssClass">
     <nav class="flex-column">
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="GetAllProfessors" Match="NavLinkMatch.All">
-                <span class="oi oi-person" aria-hidden="true"></span> Professeur
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <span class="oi oi-home" aria-hidden="true"></span> Home
             </NavLink>
         </div>
-    </nav>
-</div>
-<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
-    <nav class="flex-column">
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="GetAllMatiere" Match="NavLinkMatch.All">
-                <span class="oi oi-book" aria-hidden="true"></span> Matiere
+            <NavLink class="nav-link" href="counter">
+                <span class="oi oi-plus" aria-hidden="true"></span> Counter
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="fetchdata">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Fetch data
             </NavLink>
         </div>
     </nav>
@@ -29,7 +30,7 @@
 @code {
     private bool collapseNavMenu = true;
 
-    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+    private string NavMenuCssClass => collapseNavMenu ? "collapse navbar-collapse" : "navbar-collapse show";
 
     private void ToggleNavMenu()
     {

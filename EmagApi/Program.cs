@@ -2,6 +2,7 @@ using EmagApi.Application.Services;
 using EmagApi.Domain.Interface;
 using EmagApi.Infrastructure.DataAccess;
 using EmagApi.Infrastructure.Repertory;
+using EmagApi.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
@@ -30,7 +31,7 @@ builder.Services.AddScoped<IMatiereServices, MatiereServices>();
 builder.Services.AddScoped<IFiliereRepertory,FiliereRepertory>();
 builder.Services.AddScoped<IFiliereServices, FiliereServices>();
 builder.Services.AddScoped<ISeanceRepertory, SeanceRepertory>();
-builder.Services.AddScoped<ISeanceServices, SeanceServices>();
+builder.Services.AddScoped<ISeanceServices, SeanceService>();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddSwaggerGen();
 
@@ -42,10 +43,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-app.UseCors(policy => policy.WithOrigins("https://localhost:7026")
-.AllowAnyMethod()
-.WithHeaders(HeaderNames.ContentType)
-.AllowCredentials());
+app.UseCors(policy => policy
+    .WithOrigins("https://localhost:7051") // Supprimez le chemin
+    .AllowAnyMethod()
+    .WithHeaders(HeaderNames.ContentType)
+    .AllowCredentials());
+
 
 app.UseHttpsRedirection();
 

@@ -9,8 +9,8 @@ namespace EmagApi.Domain.Interface
 {
     public interface ISeanceRepertory
     {
-        Task<IEnumerable<Seance>> GetSeancesByProfesseurIdAsync(int professeurId);
-        Task<List<Seance>> GetSeancesByProfesseurNameAsync(string NomDuProfesseur);
+        Task<IEnumerable<Seance>> GetAllSeances();
+       // Task<List<Seance>> GetSeancesByProfesseurNameAsync(string NomDuProfesseur);
         Task<Seance> GetSeanceByIdAsync(int id);
         Task AddSeanceAsync(Seance seance);
         Task UpdateSeanceAsync(Seance seance);

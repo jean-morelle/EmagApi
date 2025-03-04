@@ -1,0 +1,48 @@
+﻿@page "/AddNewMatiere"
+@using EmagApi.Core.ServicesProvider.Interfaces
+@using EmagApi.Domain.Models
+
+<hr />
+<div class="row">
+    <div class="col-md-6">
+        <EditForm Model="matiere" OnValidSubmit="CreateMatiere">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="form-group">
+                <label class="control-label">Nom</label>
+                <InputText class="form-control" @bind-Value="@matiere.Nom" />
+                <ValidationMessage For="()=>matiere.Nom" />
+            </div>
+
+            <div class="form-group mt-4">
+                <button type="submit" class="btn btn-primary">Enregistrer</button>
+                <button type="button" @onclick="Cancel" class="btn btn-danger">Retour</button>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    private Matiere matiere { get; set; } = new();
+
+    [Inject]
+    private NavigationManager? navigationManager { get; set; }
+
+    [Inject]
+    private IMatiereServices? matiereServices { get; set; }
+
+    private async Task CreateMatiere()
+    {
+        if (matiereServices is not null)
+        {
+            await matiereServices.AddMatiereAsync(matiere);
+            navigationManager?.NavigateTo("/GetAllMatiere");
+        }
+    }
+
+    private void Cancel()
+    {
+        navigationManager?.NavigateTo("/GetAllMatiere");
+    }
+}

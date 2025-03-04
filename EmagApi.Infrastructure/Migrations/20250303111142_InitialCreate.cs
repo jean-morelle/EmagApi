@@ -71,8 +71,10 @@ namespace EmagApi.Infrastructure.Migrations
                     Date = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ProfesseurId = table.Column<int>(type: "int", nullable: false),
                     Lieu = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    NombreHeure = table.Column<int>(type: "int", nullable: false),
-                    SeanceTenue = table.Column<bool>(type: "bit", nullable: false)
+                    NombreHeure = table.Column<double>(type: "float", nullable: false),
+                    SeanceTenue = table.Column<bool>(type: "bit", nullable: false),
+                    CommencerA = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    TerminerA = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -92,9 +94,7 @@ namespace EmagApi.Infrastructure.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     SeanceId = table.Column<int>(type: "int", nullable: false),
-                    MatiereId = table.Column<int>(type: "int", nullable: false),
-                    CommencerA = table.Column<TimeSpan>(type: "time", nullable: false),
-                    TerminerA = table.Column<TimeSpan>(type: "time", nullable: false)
+                    MatiereId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {

@@ -1,0 +1,118 @@
+﻿@page "/UpdateSeance/{id:int}"
+@using EmagApi.Core.ServicesProvider.Interfaces
+@using EmagApi.Domain.Models
+@inject NavigationManager NavigationManager
+@inject ISeanceServices SeanceServices
+@inject IProfesseurServices ProfesseurServices
+
+<h3>Modifier une séance</h3>
+<hr />
+
+@if (IsLoading)
+{
+    <p><em>Chargement...</em></p>
+}
+else if (Seance is null)
+{
+    <div class="alert alert-danger">Séance introuvable.</div>
+}
+else
+{
+    <EditForm Model="Seance" OnValidSubmit="UpdateSeances">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <!-- Date de la séance -->
+        <div class="form-group">
+            <label class="control-label">Date de séance</label>
+            <InputDate class="form-control" @bind-Value="Seance.Date" />
+            <ValidationMessage For="()=>Seance.Date" />
+        </div>
+
+        <!-- Sélection du professeur -->
+        <div class="form-group">
+            <label class="control-label">Professeur</label>
+            <InputSelect class="form-control" @bind-Value="Seance.ProfesseurId">
+                <option value="">-- Sélectionnez un professeur --</option>
+                @foreach (var prof in Professeurs)
+                {
+                    <option value="@prof.Id">@prof.Nom</option>
+                }
+            </InputSelect>
+            <ValidationMessage For="()=>Seance.ProfesseurId" />
+        </div>
+
+        <!-- Lieu de la séance -->
+        <div class="form-group">
+            <label class="control-label">Lieu</label>
+            <InputText class="form-control" @bind-Value="Seance.Lieu" />
+            <ValidationMessage For="()=>Seance.Lieu" />
+        </div>
+
+        <!-- Nombre d'heures -->
+        <div class="form-group">
+            <label class="control-label">Nombre d'heures</label>
+            <InputNumber class="form-control" @bind-Value="Seance.NombreHeure" />
+            <ValidationMessage For="()=>Seance.NombreHeure" />
+        </div>
+
+        <!-- Séance tenue -->
+        <div class="form-group form-check">
+            <label class="form-check-label">
+                <InputCheckbox class="form-check-input" @bind-Value="Seance.SeanceTenue" />
+                Séance tenue ?
+            </label>
+        </div>
+
+        <!-- Boutons -->
+        <div class="form-group mt-4">
+            <button type="submit" class="btn btn-primary">Enregistrer</button>
+            <button type="button" @onclick="Cancel" class="btn btn-danger">Retour</button>
+        </div>
+    </EditForm>
+}
+
+@code {
+    [Parameter] public int Id { get; set; }
+
+    private Seance? Seance { get; set; }
+    private List<Professeur> Professeurs { get; set; } = new();
+    private bool IsLoading { get; set; } = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadSeance();
+    }
+
+    private async Task LoadSeance()
+    {
+        try
+        {
+            IsLoading = true;
+            Seance = await SeanceServices.GetSeanceByIdAsync(Id);
+            Professeurs = await ProfesseurServices.GetAllProfesseursAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Erreur lors du chargement : {ex.Message}");
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    private async Task UpdateSeances()
+    {
+        if (Seance is not null)
+        {
+            await SeanceServices.UpdateSeanceAsync(Seance);
+            NavigationManager.NavigateTo("/GetAllSeance");
+        }
+    }
+
+    private void Cancel()
+    {
+        NavigationManager.NavigateTo("/GetAllSeance");
+    }
+}

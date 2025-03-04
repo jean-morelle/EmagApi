@@ -107,6 +107,9 @@ namespace EmagApi.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime>("CommencerA")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
@@ -114,14 +117,17 @@ namespace EmagApi.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("NombreHeure")
-                        .HasColumnType("int");
+                    b.Property<double>("NombreHeure")
+                        .HasColumnType("float");
 
                     b.Property<int>("ProfesseurId")
                         .HasColumnType("int");
 
                     b.Property<bool>("SeanceTenue")
                         .HasColumnType("bit");
+
+                    b.Property<DateTime>("TerminerA")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -138,17 +144,11 @@ namespace EmagApi.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<TimeSpan>("CommencerA")
-                        .HasColumnType("time");
-
                     b.Property<int>("MatiereId")
                         .HasColumnType("int");
 
                     b.Property<int>("SeanceId")
                         .HasColumnType("int");
-
-                    b.Property<TimeSpan>("TerminerA")
-                        .HasColumnType("time");
 
                     b.HasKey("Id");
 

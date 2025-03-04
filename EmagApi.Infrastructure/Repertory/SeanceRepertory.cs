@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace EmagApi.Infrastructure.Repertory
 {
-    public class SeanceRepertory:ISeanceRepertory
+    public class SeanceRepertory : ISeanceRepertory
     {
         private readonly ApplicationDbContext dbContext;
 
@@ -21,61 +21,86 @@ namespace EmagApi.Infrastructure.Repertory
 
         public async Task AddSeanceAsync(Seance seance)
         {
-          
             var professeurExiste = await dbContext.Professeurs.AnyAsync(p => p.Id == seance.ProfesseurId);
             if (!professeurExiste)
             {
                 throw new Exception("Le professeur spécifié n'existe pas.");
             }
 
+            // Calculer le nombre d'heures avant l'ajout
+          //  seance.MettreAJourNombreHeures();
+
             dbContext.Seances.Add(seance);
             await dbContext.SaveChangesAsync();
         }
 
-        
-
         public async Task DeleteSeanceAsync(int id)
         {
-            var seance = await dbContext.Seances.FirstOrDefaultAsync(s => s.Id == id); 
+            var seance = await dbContext.Seances.FirstOrDefaultAsync(s => s.Id == id);
 
-            if (seance == null)  
+            if (seance == null)
             {
                 throw new ArgumentException("La séance n'existe pas.");
             }
 
-            dbContext.Seances.Remove(seance);  
-            await dbContext.SaveChangesAsync();  
+            dbContext.Seances.Remove(seance);
+            await dbContext.SaveChangesAsync();
         }
 
+        //public async Task<List<Seance>> GetSeancesByProfesseurNameAsync(string nomDuProfesseur)
+        //{
+        //    if (string.IsNullOrWhiteSpace(nomDuProfesseur))
+        //    {
+        //        throw new ArgumentException("Le nom du professeur ne peut pas être vide.", nameof(nomDuProfesseur));
+        //    }
 
-        public async Task<List<Seance>> GetSeancesByProfesseurNameAsync(string nomDuProfesseur)
+        //    var seances = await dbContext.Seances
+        //        .Where(s => s.Professeur != null && s.Professeur.Nom == nomDuProfesseur)
+        //        .Include(s => s.Professeur)
+        //        .ToListAsync();
+
+        //    // Mettre à jour le nombre d'heures de chaque séance
+        //    foreach (var seance in seances)
+        //    {
+        //        seance.MettreAJourNombreHeures();
+        //    }
+
+        //    return seances;
+        //}
+
+        public async Task<IEnumerable<Seance>> GetAllSeances()
         {
-            if (string.IsNullOrWhiteSpace(nomDuProfesseur))
-            {
-                throw new ArgumentException("Le nom du professeur ne peut pas être vide.", nameof(nomDuProfesseur));
-            }
+            var seances = await dbContext.Seances.Include(s => s.Professeur).ToListAsync();
 
-            return await dbContext.Seances
-                .Where(s => s.Professeur != null && s.Professeur.Nom == nomDuProfesseur)  
-                .Include(s => s.Professeur) 
-                .ToListAsync();
+            // Mettre à jour le nombre d'heures de chaque séance
+            //foreach (var seance in seances)
+            //{
+            //    seance.MettreAJourNombreHeures();
+            //}
+
+            return seances;
         }
 
-
-        public async Task<IEnumerable<Seance>> GetSeancesByProfesseurIdAsync(int professeurId)
+        public async Task<Seance> GetSeanceByIdAsync(int id)
         {
-            var seance = await dbContext.Seances.Include(s=>s.Professeur).Where(s => s.ProfesseurId == professeurId).ToListAsync();
+            var seance = await dbContext.Seances
+                .Include(s => s.Professeur)
+                .FirstOrDefaultAsync(s => s.Id == id);
+
+            // Mettre à jour le nombre d'heures pour cette séance
+            //if (seance != null)
+            //{
+            //    seance.MettreAJourNombreHeures();
+            //}
+
             return seance;
-        }
-
-        public Task<Seance> GetSeanceByIdAsync(int id)
-        {
-          var seance = dbContext.Seances.Include(s => s.Professeur).FirstOrDefaultAsync(s => s.Id == id);
-           return seance;
         }
 
         public async Task UpdateSeanceAsync(Seance seance)
         {
+            // Mettre à jour le nombre d'heures avant la mise à jour
+           // seance.MettreAJourNombreHeures();
+
             dbContext.Seances.Update(seance);
             await dbContext.SaveChangesAsync();
         }

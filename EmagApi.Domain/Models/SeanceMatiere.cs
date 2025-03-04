@@ -13,7 +13,10 @@ namespace EmagApi.Domain.Models
         public Seance? Seance { get; set; }
         public int MatiereId { get; set; }
         public Matiere? Matiere { get; set; }
-        public TimeSpan CommencerA { get; set; }
-        public TimeSpan TerminerA { get; set; }
+      //  public TimeSpan CommencerA { get; set; }
+       // public TimeSpan TerminerA { get; set; }
+
+      //  public double Duree => (TerminerA - CommencerA).TotalHours;
+
     }
 }
