@@ -8,6 +8,6 @@ namespace EmagApi.Application.Dtos
 {
     public class AddFiliereDto
     {
-        public string Nom { get; set; } = string.Empty;
+     public string Nom { get; set; }
     }
 }

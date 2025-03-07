@@ -17,31 +17,29 @@ namespace EmagApi.Application.Services
             this.filiereRepertory = filiereRepertory;
         }
 
-        public async Task AddFiliereAsync(Filiere filiere)
+        public async Task Add(Filiere filiere)
         {
-            await filiereRepertory.AddFiliereAsync(filiere);
+          await filiereRepertory.Add(filiere);
         }
 
-        public async Task DeleteFiliereAsync(int id)
+        public async Task Delete(int id)
         {
-            await filiereRepertory.DeleteFiliereAsync(id);
+           await filiereRepertory.Delete(id);
         }
 
-        public async Task<IEnumerable<Filiere>> GetAllFiliereAsync()
+        public Task<IEnumerable<Filiere>> GetAll()
         {
-          var filiere = await filiereRepertory.GetAllFiliereAsync();
-            return filiere;
+            return filiereRepertory.GetAll();
         }
 
-        public async Task<Filiere> GetFiliereByIdAsync(int id)
+        public Task<Filiere> GetById(int id)
         {
-            var filiere = await filiereRepertory.GetFiliereByIdAsync(id);
-            return filiere;
+           return filiereRepertory.GetById(id);
         }
 
-        public async Task UpdateFiliereAsync(Filiere filiere)
+        public async Task Update(Filiere filiere)
         {
-            await filiereRepertory.UpdateFiliereAsync(filiere);
+           await filiereRepertory.Update(filiere);
         }
     }
 }

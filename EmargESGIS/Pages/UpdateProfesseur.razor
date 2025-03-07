@@ -1,0 +1,102 @@
+﻿@page "/UpdateProfesseur/{Id:int}"
+@using EmagApi.Core.Models
+@using EmagApi.Core.ServiceProvider.Interface
+
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        @if (isLoading)
+        {
+            <p>Chargement des données du professeur...</p>
+        }
+        else
+        {
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <div class="alert alert-danger">@errorMessage</div>
+            }
+
+            <EditForm Model="professeur" OnValidSubmit="UpdateProfessors">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="control-label">Nom</label>
+                                <InputText class="form-control" @bind-Value="@professeur.Nom" />
+                                <ValidationMessage For="@(() => professeur.Nom)" />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="control-label">Email</label>
+                                <InputText class="form-control" @bind-Value="@professeur.Email" />
+                                <ValidationMessage For="@(() => professeur.Email)" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group mt-3">
+                        <button type="submit" class="btn btn-primary" disabled="@isLoading">Enregistrer</button>
+                        <button type="button" @onclick="Cancel" class="btn btn-danger">Retour</button>
+                    </div>
+                </div>
+            </EditForm>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private Professeur professeur { get; set; } = new();
+    private bool isLoading = true;
+    private string errorMessage = string.Empty;
+
+    [Inject]
+    private NavigationManager navigationManager { get; set; } = default!;
+
+    [Inject]
+    private IProfesseurServices professeurService { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            if (professeurService is not null)
+            {
+                professeur = await professeurService.GetById(Id) ?? new Professeur();
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Erreur lors du chargement des données du professeur : {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task UpdateProfessors()
+    {
+        try
+        {
+            if (professeurService is not null)
+            {
+                await professeurService.Update(professeur);
+                navigationManager.NavigateTo("/GetAllProfessor");
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Erreur lors de la mise à jour du professeur : {ex.Message}";
+        }
+    }
+
+    private void Cancel()
+    {
+        navigationManager.NavigateTo("/GetAllProfessor");
+    }
+}

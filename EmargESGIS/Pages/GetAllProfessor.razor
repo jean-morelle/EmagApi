@@ -1,0 +1,146 @@
+﻿@page "/GetAllProfessor"
+@using EmagApi.Core.Models
+@using EmagApi.Core.ServiceProvider.Interface
+<div class="container my-4">
+    <div class="row">
+        <div class="col-12 text-end mb-4">
+            <button class="btn btn-success" @onclick="AddNewProfessor">Ajouter un Professeur</button>
+        </div>
+
+        <div class="col-12 mb-4">
+            <input type="text" class="form-control" placeholder="Rechercher un professeur par nom..."
+                   @bind="searchQuery" @oninput="SearchProfesseur" />
+        </div>
+
+        <div class="col-12">
+            @if (FilteredProfessors == null)
+            {
+                <p><em>Chargement des professeurs...</em></p>
+            }
+            else if (!FilteredProfessors.Any())
+            {
+                <div class="alert alert-info">Aucun professeur trouvé.</div>
+            }
+            else
+            {
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Liste des Professeurs</h5>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Nom</th>
+                                    <th class="text-end">Action</th>
+                                    @* <th class="text-end">Supprimer</th> *@
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var professeur in FilteredProfessors)
+                                {
+                                    <tr>
+                                        <td>@professeur.Nom</td>
+                                       
+                                        <td class="text-end">
+                                            <button class="btn btn-warning" @onclick="() => EditProfessor(professeur.Id)">
+                                                Modifier
+                                            </button>
+                                            <button class="btn btn-danger" @onclick="() => DeleteProfessor(professeur.Id)">
+                                                Supprimer
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+
+                        <div class="d-flex justify-content-between align-items-center">
+                            <button class="btn btn-secondary" @onclick="PreviousPage" disabled="@(CurrentPage == 1)">Précédent</button>
+                            <span>Page @CurrentPage sur @TotalPages</span>
+                            <button class="btn btn-primary" @onclick="NextPage" disabled="@(CurrentPage == TotalPages)">Suivant</button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<Professeur> AllProfesseurs { get; set; } = new();
+    private List<Professeur> FilteredProfessors => AllProfesseurs
+        .Where(p => string.IsNullOrEmpty(searchQuery) || p.Nom.Contains(searchQuery, StringComparison.OrdinalIgnoreCase))
+        .Skip((CurrentPage - 1) * PageSize)
+        .Take(PageSize)
+        .ToList();
+    private int CurrentPage { get; set; } = 1;
+    private int PageSize { get; set; } = 5;
+    private int TotalPages => (int)Math.Ceiling((double)AllProfesseurs.Count / PageSize);
+
+    private string searchQuery = string.Empty;
+
+    [Inject]
+    public IProfesseurServices professeurService { get; set; }
+
+    [Inject]
+    private IJSRuntime JS { get; set; } = default!;
+
+    [Inject]
+    private NavigationManager? navigationManager { get; set; }
+
+    private void AddNewProfessor()
+    {
+        navigationManager?.NavigateTo("/AddProfessor");
+    }
+
+    private void EditProfessor(int id)
+    {
+        navigationManager?.NavigateTo($"/UpdateProfesseur/{id}");
+    }
+
+    private async Task DeleteProfessor(int id)
+    {
+        var confirmed = await JS.InvokeAsync<bool>("confirm", "Voulez-vous vraiment supprimer ce professeur ?");
+        if (confirmed)
+        {
+            await professeurService.Delete(id);
+            await LoadProfessors();
+        }
+    }
+
+    private async Task LoadProfessors()
+    {
+        if (professeurService is not null)
+        {
+            AllProfesseurs = await professeurService.GetAll();
+            CurrentPage = 1;
+        }
+    }
+
+    private void NextPage()
+    {
+        if (CurrentPage < TotalPages)
+        {
+            CurrentPage++;
+        }
+    }
+
+    private void PreviousPage()
+    {
+        if (CurrentPage > 1)
+        {
+            CurrentPage--;
+        }
+    }
+
+    private void SearchProfesseur()
+    {
+        CurrentPage = 1;  // Reset to first page when performing search
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadProfessors();
+    }
+}

@@ -15,9 +15,8 @@ namespace EmagApi.Application.Profils
         {
             CreateMap<Filiere,FiliereDto>();
             CreateMap<FiliereDto,Filiere>();
-            CreateMap<Filiere, AddFiliereDto>();
-            CreateMap<AddFiliereDto, Filiere>();
-            
+            CreateMap<Filiere,AddFiliereDto>();
+            CreateMap<AddFiliereDto,Filiere>();
         }
     }
 }

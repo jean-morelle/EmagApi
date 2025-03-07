@@ -19,42 +19,40 @@ namespace EmagApi.Infrastructure.Repertory
             this.dbContext = dbContext;
         }
 
-        public Task AddMatiereAsync(Matiere matiere)
+        public async Task Add(Matiere matiere)
         {
-          dbContext.Matiere.Add(matiere);
-            return dbContext.SaveChangesAsync();
+            dbContext.Matieres.Add(matiere);
+            await dbContext.SaveChangesAsync();
+            
         }
-
-        public async Task DeleteMatiereAsync(int id)
+        public async Task Delete(int id)
         {
-            var matiere = await dbContext.Matiere.FirstOrDefaultAsync(x=>x.Id ==id);
-            if(matiere is null)
+            var matiere = await dbContext.Matieres.FindAsync(id);
+            if (matiere is not null)
             {
-                throw new Exception();
-            }
-            else
-            {
-                dbContext.Matiere.Remove(matiere);
+                dbContext.Matieres.Remove(matiere);
                 await dbContext.SaveChangesAsync();
             }
         }
 
-        public async Task<IEnumerable<Matiere>> GetAllMatiere()
+
+        public async Task<IEnumerable<Matiere>> GetAll()
         {
-            var matiere = await dbContext.Matiere.ToListAsync();
+            var matiere = await dbContext.Matieres.ToListAsync();
             return matiere;
         }
 
-        public async Task<Matiere> GetMatiereByIdAsync(int id)
+        public async Task<Matiere> GetById(int id)
         {
-            var matiere = await dbContext.Matiere.FirstOrDefaultAsync(x => x.Id == id);
+            var matiere = await dbContext.Matieres.FindAsync(id);
             return matiere;
         }
 
-        public async Task UpdateMatiereAsync(Matiere matiere)
+        public async Task Update(Matiere matiere)
         {
-            dbContext.Matiere.Update(matiere);
+            dbContext.Matieres.Update(matiere);
             await dbContext.SaveChangesAsync();
+         
         }
     }
 }

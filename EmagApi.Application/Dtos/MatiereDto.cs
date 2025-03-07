@@ -9,6 +9,6 @@ namespace EmagApi.Application.Dtos
     public class MatiereDto
     {
         public int Id { get; set; }
-        public string? Nom { get; set; }
+        public string Nom { get; set; }
     }
 }

@@ -11,9 +11,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmagApi.Infrastructure", "E
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmagApi.Application", "EmagApi.Application\EmagApi.Application.csproj", "{7A10BFED-2881-49F9-ABDC-D66431E20BD4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmagApi.Core", "EmagApi.Core\EmagApi.Core.csproj", "{FC4E4244-2135-4071-B9D6-CCFBFA08DDBD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmagApi.Core", "EmagApi.Core\EmagApi.Core.csproj", "{F046D8F2-F3E5-4B91-BC4A-9B7357F26692}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Esgis_Emarg", "Esgis_Emarg\Esgis_Emarg.csproj", "{A568A5D0-F19E-40B3-91AA-7927BE81C269}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmargESGIS", "EmargESGIS\EmargESGIS.csproj", "{9562D993-E426-440B-8B94-5E9D75E911E9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -37,14 +37,14 @@ Global
 		{7A10BFED-2881-49F9-ABDC-D66431E20BD4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7A10BFED-2881-49F9-ABDC-D66431E20BD4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7A10BFED-2881-49F9-ABDC-D66431E20BD4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FC4E4244-2135-4071-B9D6-CCFBFA08DDBD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FC4E4244-2135-4071-B9D6-CCFBFA08DDBD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FC4E4244-2135-4071-B9D6-CCFBFA08DDBD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FC4E4244-2135-4071-B9D6-CCFBFA08DDBD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A568A5D0-F19E-40B3-91AA-7927BE81C269}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A568A5D0-F19E-40B3-91AA-7927BE81C269}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A568A5D0-F19E-40B3-91AA-7927BE81C269}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A568A5D0-F19E-40B3-91AA-7927BE81C269}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F046D8F2-F3E5-4B91-BC4A-9B7357F26692}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F046D8F2-F3E5-4B91-BC4A-9B7357F26692}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F046D8F2-F3E5-4B91-BC4A-9B7357F26692}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F046D8F2-F3E5-4B91-BC4A-9B7357F26692}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9562D993-E426-440B-8B94-5E9D75E911E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9562D993-E426-440B-8B94-5E9D75E911E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9562D993-E426-440B-8B94-5E9D75E911E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9562D993-E426-440B-8B94-5E9D75E911E9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

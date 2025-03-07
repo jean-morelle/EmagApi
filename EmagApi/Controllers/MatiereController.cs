@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using EmagApi.Application.Dtos;
+using EmagApi.Application.Services;
 using EmagApi.Domain.Interface;
 using EmagApi.Domain.Models;
 using Microsoft.AspNetCore.Http;
@@ -14,65 +15,63 @@ namespace EmagApi.Controllers
         private readonly IMatiereServices matiereServices;
         private readonly IMapper mapper;
 
-        public MatiereController(IMatiereServices matiereServices, IMapper mapper)
+        public MatiereController(IMatiereServices matiereServices,IMapper mapper)
         {
             this.matiereServices = matiereServices;
             this.mapper = mapper;
         }
         [HttpGet]
-        public async Task<IActionResult> GetAllMatiereAsync()
+        public async Task<IActionResult> GetAll()
         {
-            var matiere = await matiereServices.GetAllMatieresAsync();
+            var matiere = await matiereServices.GetAll();
             return Ok(matiere);
         }
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetMatiereByIdAsync(int id)
+        [HttpGet("id")]
+        public async Task<IActionResult> GetById(int id)
         {
-            var matiere = await matiereServices.GetMatiereByIdAsync(id);
-            return Ok(matiere);
-        }
-        [HttpPost]
-        public async Task<IActionResult> AddNewMatiereAsync(AddMatiereDto matiereDto)
-        {
-            var matiere = mapper.Map<Matiere>(matiereDto);
-            await matiereServices.AddMatiereAsync(matiere);
-            return Ok("Matiere ajouter avec success");
-        }
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteMatiere(int id)
-        {
-            var matiere = await matiereServices.GetMatiereByIdAsync(id);
-            if (matiere is null)
+            var matiere = await matiereServices.GetById(id);
+            if (matiere == null)
             {
                 NotFound();
             }
-            else
-            {
-                await matiereServices.DeleteMatiereAsync(id);
-                return Ok($"{id} supprimer avec success");
-            }
-            return NoContent();
+            return Ok(matiere);
         }
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateMatiereAsync(int id, MatiereDto matiereDto)
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] AddMatiereDto addMatiereDto)
         {
-            if (id <= 0)
+            var matiere = mapper.Map<Matiere>(addMatiereDto);
+            await matiereServices.Add(matiere);
+            return CreatedAtAction(nameof(GetById), new { id = matiere.Id });
+        }
+        [HttpPut("id")]
+        public async Task<IActionResult> Update(int id, [FromBody] MatiereDto matiereDto)
+        {
+            if (id != matiereDto.Id)
             {
                 return BadRequest();
             }
-
-            var existingMatiere = await matiereServices.GetMatiereByIdAsync(id);
+            var existingMatiere = await matiereServices.GetById(id);
             if (existingMatiere == null)
             {
                 return NotFound();
             }
-
-            // Map the DTO onto the existing entity
-            mapper.Map(matiereDto, existingMatiere);
-            await matiereServices.UpdateMatiereAsync(existingMatiere);
-
-            return Ok("Matiere modifiée avec succès");
+            var updatedMatiere= mapper.Map(matiereDto, existingMatiere);
+            await matiereServices.Update(updatedMatiere);
+            return NoContent();
         }
-
+        [HttpDelete("id")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var matiere = await matiereServices.GetById(id);
+            if (matiere is null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                await matiereServices.Delete(id);
+            }
+            return NoContent();
+        }
     }
 }

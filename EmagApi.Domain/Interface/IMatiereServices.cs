@@ -9,10 +9,10 @@ namespace EmagApi.Domain.Interface
 {
     public interface IMatiereServices
     {
-        Task<IEnumerable<Matiere>> GetAllMatieresAsync();
-        Task<Matiere> GetMatiereByIdAsync(int id);
-        Task AddMatiereAsync(Matiere matiere);
-        Task UpdateMatiereAsync(Matiere matiere);
-        Task DeleteMatiereAsync(int id);
+        Task<IEnumerable<Matiere>> GetAll();
+        Task<Matiere> GetById(int id);
+        Task Add(Matiere matiere);
+        Task Update(Matiere matiere);
+        Task Delete(int id);
     }
 }

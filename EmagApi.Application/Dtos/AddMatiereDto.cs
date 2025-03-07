@@ -8,6 +8,6 @@ namespace EmagApi.Application.Dtos
 {
     public class AddMatiereDto
     {
-        public string? Nom { get; set; }
+        public string Nom { get; set; }
     }
 }

@@ -1,0 +1,155 @@
+﻿@page "/GetAllMatiere"
+@using EmagApi.Core.Models
+@using EmagApi.Core.ServiceProvider.Interface
+<div class="container my-4">
+    <div class="row">
+        <div class="col-12 text-end mb-4">
+            <button class="btn btn-success" @onclick="AddMatiere">Ajouter une Matiere</button>
+        </div>
+
+        <div class="col-12 mb-4">
+            <input type="text" class="form-control" placeholder="Rechercher une matiere par nom..."
+                   @bind="searchQuery" @oninput="SearchMatiere" />
+        </div>
+
+        <div class="col-12">
+            @if (FilteredMatiere == null)
+            {
+                <p><em>Chargement des matieres...</em></p>
+            }
+            else if (!FilteredMatiere.Any())
+            {
+                <div class="alert alert-info">Aucune matiere trouvé.</div>
+            }
+            else
+            {
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Liste des Matieres</h5>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Nom</th>
+                                    <th class="text-end">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var matiere in FilteredMatiere)
+                                {
+                                    <tr>
+                                        <td>@matiere.Nom</td>
+
+                                        <td class="text-end">
+                                            <button class="btn btn-warning" @onclick="() => EditMatiere(matiere.Id)">
+                                                Modifier
+                                            </button>
+                                            <button class="btn btn-danger" @onclick="() => DeleteMatiere(matiere.Id)">
+                                                Supprimer
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+
+                        <div class="d-flex justify-content-between align-items-center">
+                            <button class="btn btn-secondary" @onclick="PreviousPage" disabled="@(CurrentPage == 1)">Précédent</button>
+                            <span>Page @CurrentPage sur @TotalPages</span>
+                            <button class="btn btn-primary" @onclick="NextPage" disabled="@(CurrentPage == TotalPages)">Suivant</button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<Matiere> AllMatiere { get; set; } = new();
+    private List<Matiere> FilteredMatiere => AllMatiere
+        .Where(p => string.IsNullOrEmpty(searchQuery) || p.Nom.Contains(searchQuery, StringComparison.OrdinalIgnoreCase))
+        .Skip((CurrentPage - 1) * PageSize)
+        .Take(PageSize)
+        .ToList();
+    private int CurrentPage { get; set; } = 1;
+    private int PageSize { get; set; } = 5;
+    private int TotalPages => (int)Math.Ceiling((double)AllMatiere.Count / PageSize);
+    private string searchQuery = string.Empty;
+
+    [Inject]
+    public IMatiereServices matiereServices { get; set; }
+
+    [Inject]
+    private IJSRuntime JS { get; set; } = default!;
+
+    [Inject]
+    private NavigationManager? navigationManager { get; set; }
+
+    private void AddMatiere()
+    {
+        navigationManager?.NavigateTo("/AddMatiere");
+    }
+
+    private void EditMatiere(int id)
+    {
+        navigationManager?.NavigateTo($"/UpdateMatiere/{id}");
+    }
+
+    private async Task DeleteMatiere(int id)
+    {
+        var confirmed = await JS.InvokeAsync<bool>("confirm", "Voulez-vous vraiment supprimer cette matiere ?");
+        if (confirmed)
+        {
+            try
+            {
+                if (matiereServices is not null)
+                {
+                    await matiereServices.Delete(id);
+                    await LoadMatiere();
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle error and notify the user
+                await JS.InvokeVoidAsync("alert", $"Erreur: {ex.Message}");
+            }
+        }
+    }
+
+    private async Task LoadMatiere()
+    {
+        if (matiereServices is not null)
+        {
+            AllMatiere = await matiereServices.GetAll();
+            CurrentPage = 1;
+        }
+    }
+
+    private void NextPage()
+    {
+        if (CurrentPage < TotalPages)
+        {
+            CurrentPage++;
+        }
+    }
+
+    private void PreviousPage()
+    {
+        if (CurrentPage > 1)
+        {
+            CurrentPage--;
+        }
+    }
+
+    private void SearchMatiere()
+    {
+        CurrentPage = 1;  // Reset to first page when performing search
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadMatiere();
+    }
+}

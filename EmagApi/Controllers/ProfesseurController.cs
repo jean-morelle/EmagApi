@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
 using EmagApi.Application.Dtos;
+using EmagApi.Application.Services;
 using EmagApi.Domain.Interface;
 using EmagApi.Domain.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.VisualBasic;
 
 namespace EmagApi.Controllers
 {
@@ -20,98 +22,63 @@ namespace EmagApi.Controllers
             this.mapper = mapper;
         }
         [HttpGet]
-        public async Task<IActionResult> GetProfesseursAsync()
+        public async Task<IActionResult> GetAll()
         {
-          var professeur = await professeurServices.GetAllProfesseursAsync();
+            var professeur = await professeurServices.GetAll();
             return Ok(professeur);
         }
-
-        [HttpGet("details/{nom}")]
-        public async Task<IActionResult> GetProfesseurDetailsByNomAsync(string nom)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(int id)
         {
-            try
+            var professeur = await professeurServices.GetById(id);
+            if (professeur == null)
             {
-                // Vérifier si le nom est valide ou non vide
-                if (string.IsNullOrWhiteSpace(nom))
-                {
-                    return BadRequest(new { Message = "Le nom du professeur ne peut pas être vide." });
-                }
-
-                // Appeler le service pour récupérer les détails du professeur
-                var professeur = await professeurServices.GetProfesseurDetailsByNomAsync(nom);
-
-                if (professeur == null)
-                {
-                    // Si le professeur n'est pas trouvé, retourner une réponse 404 avec un message explicite
-                    return NotFound(new { Message = $"Aucun professeur trouvé avec le nom : {nom}" });
-                }
-
-                // Si trouvé, retourner les détails du professeur
-                return Ok(professeur);
+                NotFound();
             }
-            catch (Exception ex)
-            {
-                // En cas d'erreur, retourner une réponse 500 (Internal Server Error) avec un message d'erreur générique
-                return StatusCode(500, new { Message = "Une erreur interne est survenue.", Details = ex.Message });
-            }
-        }
-
-        [HttpGet("{Id}")]
-        public async Task<IActionResult> GetProfesseurByIdAsync(int Id)
-        {
-            if (Id <= 0)
-            {
-                return BadRequest();
-            }
-            var professeur = await professeurServices.GetProfesseurByIdAsync(Id);
             return Ok(professeur);
         }
         [HttpPost]
-        public async Task<IActionResult>AddNewProfesseurAsync(AddProfesseurDto professeurDto)
+        public async Task<IActionResult> Create([FromBody]AddProfesseurDto addProfesseurDto)
         {
-            var professeur = mapper.Map<Professeur>(professeurDto);
-            await professeurServices.AddProfesseurAsync(professeur);
-            CreatedAtAction(nameof(GetProfesseurByIdAsync), new { Id = professeur.Id }, professeur);
-            return Ok($"Creer avec success");
-
-        }
-        [HttpDelete("{id}")]
-        public async Task<IActionResult>DeleteProfesseur(int id)
-        {
-            if (id <= 0)
-            {
-              return BadRequest();
-            }
-            var professeur = await professeurServices.GetProfesseurByIdAsync(id);
-            if(professeur == null)
-            {
-                NotFound(id);
-            }
-            else
-            {
-                await professeurServices.DeleteProfesseurAsync(id);
-            }
-            return NoContent();
+          var professeur = mapper.Map<Professeur>(addProfesseurDto);
+            await professeurServices.Add(professeur);
+           // var createdProfesseur = await professeurServices.Add(professeur);
+            return CreatedAtAction(nameof(GetById), new { id = professeur.Id });
         }
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateProfesseurAsync(int id, [FromBody] ProfesseurDto professeurDto)
+        public async Task<IActionResult> Update(int id, [FromBody] ProfesseurDto professeurDto)
         {
-            if (id <= 0)
+            if (id != professeurDto.Id)
             {
                 return BadRequest();
             }
 
-            var existingProfesseur = await professeurServices.GetProfesseurByIdAsync(id);
+            var existingProfesseur = await professeurServices.GetById(id);
             if (existingProfesseur == null)
             {
-                return NotFound(id);
+                return NotFound();
             }
 
             var updatedProfesseur = mapper.Map(professeurDto, existingProfesseur);
-            await professeurServices.UpdateProfesseurAsync(updatedProfesseur);
+            await professeurServices.Update(updatedProfesseur);
 
             return NoContent();
         }
 
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<Professeur>> Delete(int id)
+        {
+            var professeur = await professeurServices.GetById(id);
+
+            if (professeur == null)
+            {
+                return NotFound(new { message = "Professeur non trouvé" });
+            }
+            await professeurServices.Delete(id);
+
+            return Ok(new { message = "Professeur supprimé", data = professeur });
+        }
     }
 }
+    
+

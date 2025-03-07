@@ -20,72 +20,62 @@ namespace EmagApi.Infrastructure.Repertory
             this.dbContext = dbContext;
         }
 
-        public async Task AddProfesseurAsync(Professeur professeur)
+        public async Task Add(Professeur professeur)
         {
-            dbContext.Professeurs.Add(professeur);
+          dbContext.Professeurs.Add(professeur);
             await dbContext.SaveChangesAsync();
+           
         }
 
-        public async Task DeleteProfesseurAsync(int id)
+        public async Task Delete(int id)
         {
-           var professeur = await dbContext.Professeurs.FirstOrDefaultAsync(x=>x.Id==id);
-            if (professeur is  null)
+            try
             {
-                throw new Exception($"Impossible de supprimer {id}");
-                
-            }
-            else
-            {
+                // Recherche du professeur par ID
+                var professeur = await dbContext.Professeurs.FindAsync(id);
+
+                if (professeur is null)
+                {
+                    throw new Exception();
+                }
+              //  dbContext.Emargements.RemoveRange(professeur.Emargements);
+                // Suppression du professeur
                 dbContext.Professeurs.Remove(professeur);
+
+                // Sauvegarde des changements dans la base de données
                 await dbContext.SaveChangesAsync();
+
+              
+            }
+            catch (Exception ex)
+            {
+                // Gérer les exceptions ici et peut-être logger l'erreur
+                // Par exemple, loguer l'exception (si vous utilisez un framework de logging)
+                Console.Error.WriteLine($"Erreur lors de la suppression : {ex.Message}");
+
+                // Vous pouvez aussi retourner une réponse d'erreur ou lever une exception.
+                throw new InvalidOperationException("Une erreur est survenue lors de la suppression du professeur.", ex);
             }
         }
 
-        public async Task<List<Professeur>> GetAllProfesseursAsync()
+
+        public async Task<IEnumerable<Professeur>> GetAll()
         {
             var professeur = await dbContext.Professeurs.ToListAsync();
             return professeur;
         }
 
-        public async Task<Professeur> GetProfesseurByIdAsync(int id)
+        public async Task<Professeur> GetById(int id)
         {
-            var professeur = await dbContext.Professeurs.FirstOrDefaultAsync(x=>x.Id==id);
+            var professeur = await dbContext.Professeurs.FindAsync(id);
             return professeur;
         }
 
-        public async Task<Professeur> GetProfesseurDetailsByNomAsync(string nom)
+        public async Task Update(Professeur professeur)
         {
-            var professeur = await dbContext.Professeurs
-                .Where(p => p.Nom.Contains(nom))
-                .Include(p => p.Seances) // Inclure les séances du professeur
-                .ThenInclude(s => s.SeanceMatieres) // Inclure la table de jonction des matières
-                .ThenInclude(sm => sm.Matiere) // Inclure les matières associées à la séance
-                .FirstOrDefaultAsync(); // Récupérer le premier professeur trouvé
-
-            if (professeur != null)
-            {
-                // Charger les filières des matières associées
-                foreach (var seance in professeur.Seances)
-                {
-                    foreach (var seanceMatiere in seance.SeanceMatieres)
-                    {
-                        var matiere = seanceMatiere.Matiere;
-                        // Charger la filière pour chaque matière
-                        //await dbContext.Entry(matiere).Reference(m => m.Filiere).LoadAsync();
-                    }
-                }
-            }
-
-            return professeur; // Retourner l'objet Professeur avec ses relations et filières chargées
-        }
-
-
-
-
-        public Task UpdateProfesseurAsync(Professeur professeur)
-        {
-           dbContext.Professeurs.Update(professeur);
-            return dbContext.SaveChangesAsync();
+            dbContext.Professeurs.Update(professeur);
+            await dbContext.SaveChangesAsync();
+           
         }
     }
 }

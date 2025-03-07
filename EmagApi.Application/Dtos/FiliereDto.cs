@@ -9,6 +9,6 @@ namespace EmagApi.Application.Dtos
     public class FiliereDto
     {
         public int Id { get; set; }
-        public string Nom { get; set; } = string.Empty;
+        public string Nom { get; set; }
     }
 }

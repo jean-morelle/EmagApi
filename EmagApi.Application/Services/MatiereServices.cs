@@ -17,31 +17,29 @@ namespace EmagApi.Application.Services
             this.matiereRepertory = matiereRepertory;
         }
 
-        public async Task AddMatiereAsync(Matiere matiere)
+        public async Task Add(Matiere matiere)
         {
-            await matiereRepertory.AddMatiereAsync(matiere);
+            await matiereRepertory.Add(matiere);
         }
 
-        public async Task DeleteMatiereAsync(int id)
+        public async Task Delete(int id)
         {
-            await matiereRepertory.DeleteMatiereAsync(id);
+            await matiereRepertory.Delete(id);
         }
 
-        public async Task<IEnumerable<Matiere>> GetAllMatieresAsync()
+        public Task<IEnumerable<Matiere>> GetAll()
         {
-            var matiere = await matiereRepertory.GetAllMatiere();
-            return matiere;
+            return matiereRepertory.GetAll();
         }
 
-        public async Task<Matiere> GetMatiereByIdAsync(int id)
+        public Task<Matiere> GetById(int id)
         {
-            var matiere = await matiereRepertory.GetMatiereByIdAsync(id);
-            return matiere;
+            return matiereRepertory.GetById(id);
         }
 
-        public async Task UpdateMatiereAsync(Matiere matiere)
+        public async Task Update(Matiere matiere)
         {
-            await matiereRepertory.UpdateMatiereAsync(matiere);
+            await matiereRepertory.Update(matiere);
         }
     }
 }

@@ -18,43 +18,43 @@ namespace EmagApi.Infrastructure.Repertory
         {
             this.applicationDbContext = applicationDbContext;
         }
-
-        public Task AddFiliereAsync(Filiere filiere)
+        public async Task Add(Filiere filiere)
         {
-          applicationDbContext.Filiere.Add(filiere);
-            return applicationDbContext.SaveChangesAsync();
+            applicationDbContext.Filieres.Add(filiere);
+            await applicationDbContext.SaveChangesAsync();
+           
         }
-
-        public async Task DeleteFiliereAsync(int id)
+        public async Task Delete(int id)
         {
-           var filiere = await applicationDbContext.Filiere.FirstOrDefaultAsync(x => x.Id == id);
-            if (filiere == null)
+            var filiere = await applicationDbContext.Filieres.FindAsync(id);
+            if (filiere is not null)
             {
-                throw new ArgumentException();
-            }
-            else
-            {
-                applicationDbContext.Filiere.Remove(filiere);
+                applicationDbContext.Filieres.Remove(filiere);
                 await applicationDbContext.SaveChangesAsync();
             }
+
+          
         }
 
-        public async Task<IEnumerable<Filiere>> GetAllFiliereAsync()
+
+        public async Task<IEnumerable<Filiere>> GetAll()
         {
-            var filiere = await applicationDbContext.Filiere.ToListAsync();
+            var filiere = await applicationDbContext.Filieres.ToListAsync();
             return filiere;
         }
 
-        public async Task<Filiere> GetFiliereByIdAsync(int id)
+        public async Task<Filiere> GetById(int id)
         {
-           var filiere = await applicationDbContext.Filiere.FirstOrDefaultAsync(x=>x.Id==id);
+            var filiere = await applicationDbContext.Filieres.FindAsync(id);
             return filiere;
         }
 
-        public async Task UpdateFiliereAsync(Filiere filiere)
+        public async Task Update(Filiere filiere)
         {
-            applicationDbContext.Filiere.Update(filiere);
+            applicationDbContext.Filieres.Update(filiere);
             await applicationDbContext.SaveChangesAsync();
+            
         }
+
     }
 }

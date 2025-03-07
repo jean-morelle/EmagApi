@@ -2,12 +2,8 @@ using EmagApi.Application.Services;
 using EmagApi.Domain.Interface;
 using EmagApi.Infrastructure.DataAccess;
 using EmagApi.Infrastructure.Repertory;
-using EmagApi.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
-using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -30,8 +26,10 @@ builder.Services.AddScoped<IMatiereRepertory, MatiereRepertory>();
 builder.Services.AddScoped<IMatiereServices, MatiereServices>();
 builder.Services.AddScoped<IFiliereRepertory,FiliereRepertory>();
 builder.Services.AddScoped<IFiliereServices, FiliereServices>();
-builder.Services.AddScoped<ISeanceRepertory, SeanceRepertory>();
-builder.Services.AddScoped<ISeanceServices, SeanceService>();
+builder.Services.AddScoped<ISiteRepertory, SiteRepertory>();
+builder.Services.AddScoped<ISiteServices, SiteServices>();
+builder.Services.AddScoped<IEmargementRepertory, EmargementRepertory>();
+builder.Services.AddScoped<IEmargementServices, EmargementServices>();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddSwaggerGen();
 
@@ -44,11 +42,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 app.UseCors(policy => policy
-    .WithOrigins("https://localhost:7051") // Supprimez le chemin
+    .WithOrigins("https://localhost:7274") // Supprimez le chemin
     .AllowAnyMethod()
     .WithHeaders(HeaderNames.ContentType)
     .AllowCredentials());
-
 
 app.UseHttpsRedirection();
 

@@ -9,10 +9,10 @@ namespace EmagApi.Domain.Interface
 {
     public interface IFiliereRepertory
     {
-        Task<IEnumerable<Filiere>> GetAllFiliereAsync();
-        Task<Filiere> GetFiliereByIdAsync(int id);
-        Task AddFiliereAsync(Filiere filiere);
-        Task DeleteFiliereAsync(int id);
-        Task UpdateFiliereAsync(Filiere filiere);
+        Task<IEnumerable<Filiere>> GetAll();
+        Task<Filiere> GetById(int id);
+        Task Add(Filiere filiere);
+        Task Delete(int id);
+        Task Update(Filiere filiere);
     }
 }

@@ -22,6 +22,45 @@ namespace EmagApi.Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("EmagApi.Domain.Models.Emargement", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("FiliereId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("HeureDebut")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("HeureFin")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("MatiereId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProfesseurId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SiteId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FiliereId");
+
+                    b.HasIndex("MatiereId");
+
+                    b.HasIndex("ProfesseurId");
+
+                    b.HasIndex("SiteId");
+
+                    b.ToTable("Emargement");
+                });
+
             modelBuilder.Entity("EmagApi.Domain.Models.Filiere", b =>
                 {
                     b.Property<int>("Id")
@@ -47,15 +86,11 @@ namespace EmagApi.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("FiliereId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Nom")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("FiliereId");
 
                     b.ToTable("Matiere");
                 });
@@ -68,29 +103,11 @@ namespace EmagApi.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Adresse")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("DateDeNaissance")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("DernierDiplome")
+                    b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Nom")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Prenom")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Sexe")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Telephone")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -99,7 +116,7 @@ namespace EmagApi.Infrastructure.Migrations
                     b.ToTable("Professeurs");
                 });
 
-            modelBuilder.Entity("EmagApi.Domain.Models.Seance", b =>
+            modelBuilder.Entity("EmagApi.Domain.Models.Site", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -107,113 +124,72 @@ namespace EmagApi.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("CommencerA")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Lieu")
+                    b.Property<string>("Adresse")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<double>("NombreHeure")
-                        .HasColumnType("float");
-
-                    b.Property<int>("ProfesseurId")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("SeanceTenue")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime>("TerminerA")
-                        .HasColumnType("datetime2");
+                    b.Property<string>("Nom")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProfesseurId");
-
-                    b.ToTable("Seances");
+                    b.ToTable("Site");
                 });
 
-            modelBuilder.Entity("EmagApi.Domain.Models.SeanceMatiere", b =>
+            modelBuilder.Entity("EmagApi.Domain.Models.Emargement", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("MatiereId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SeanceId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MatiereId");
-
-                    b.HasIndex("SeanceId");
-
-                    b.ToTable("SeanceMatiere");
-                });
-
-            modelBuilder.Entity("EmagApi.Domain.Models.Matiere", b =>
-                {
-                    b.HasOne("EmagApi.Domain.Models.Filiere", null)
-                        .WithMany("Matieres")
-                        .HasForeignKey("FiliereId");
-                });
-
-            modelBuilder.Entity("EmagApi.Domain.Models.Seance", b =>
-                {
-                    b.HasOne("EmagApi.Domain.Models.Professeur", "Professeur")
-                        .WithMany("Seances")
-                        .HasForeignKey("ProfesseurId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                    b.HasOne("EmagApi.Domain.Models.Filiere", "Filiere")
+                        .WithMany("Emargements")
+                        .HasForeignKey("FiliereId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Professeur");
-                });
-
-            modelBuilder.Entity("EmagApi.Domain.Models.SeanceMatiere", b =>
-                {
                     b.HasOne("EmagApi.Domain.Models.Matiere", "Matiere")
-                        .WithMany("SeanceMatieres")
+                        .WithMany("Emargements")
                         .HasForeignKey("MatiereId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("EmagApi.Domain.Models.Seance", "Seance")
-                        .WithMany("SeanceMatieres")
-                        .HasForeignKey("SeanceId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                    b.HasOne("EmagApi.Domain.Models.Professeur", "Professeur")
+                        .WithMany("Emargements")
+                        .HasForeignKey("ProfesseurId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("EmagApi.Domain.Models.Site", "Site")
+                        .WithMany("Emargements")
+                        .HasForeignKey("SiteId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Filiere");
 
                     b.Navigation("Matiere");
 
-                    b.Navigation("Seance");
+                    b.Navigation("Professeur");
+
+                    b.Navigation("Site");
                 });
 
             modelBuilder.Entity("EmagApi.Domain.Models.Filiere", b =>
                 {
-                    b.Navigation("Matieres");
+                    b.Navigation("Emargements");
                 });
 
             modelBuilder.Entity("EmagApi.Domain.Models.Matiere", b =>
                 {
-                    b.Navigation("SeanceMatieres");
+                    b.Navigation("Emargements");
                 });
 
             modelBuilder.Entity("EmagApi.Domain.Models.Professeur", b =>
                 {
-                    b.Navigation("Seances");
+                    b.Navigation("Emargements");
                 });
 
-            modelBuilder.Entity("EmagApi.Domain.Models.Seance", b =>
+            modelBuilder.Entity("EmagApi.Domain.Models.Site", b =>
                 {
-                    b.Navigation("SeanceMatieres");
+                    b.Navigation("Emargements");
                 });
 #pragma warning restore 612, 618
         }

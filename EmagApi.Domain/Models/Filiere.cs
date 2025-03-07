@@ -9,7 +9,7 @@ namespace EmagApi.Domain.Models
     public class Filiere
     {
         public int Id { get; set; }
-        public string Nom { get; set; } = string.Empty;
-        public List<Matiere> Matieres { get; set; } = new List<Matiere>();
+        public string Nom { get; set; } 
+        public ICollection<Emargement>Emargements { get; set; }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using EmagApi.Domain.Interface;
 using EmagApi.Domain.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,52 +13,34 @@ namespace EmagApi.Application.Services
     {
         private readonly IProfesseurRepertory professeurRepertory;
 
-        public ProfesseurServices(IProfesseurRepertory professeurRepertory)
+        public ProfesseurServices(IProfesseurRepertory professeurRepertory )
         {
             this.professeurRepertory = professeurRepertory;
         }
 
-        public async Task AddProfesseurAsync(Professeur professeur)
+        public async Task Add(Professeur professeur)
         {
-            await professeurRepertory.AddProfesseurAsync(professeur);
+         await professeurRepertory.Add(professeur);
         }
 
-        public async Task DeleteProfesseurAsync(int id)
+        public  async Task Delete(int id)
         {
-            await professeurRepertory.DeleteProfesseurAsync(id);
+          await professeurRepertory.Delete( id );
         }
 
-        public async Task<List<Professeur>> GetAllProfesseursAsync()
+        public Task<IEnumerable<Professeur>> GetAll()
         {
-          var professeur = await professeurRepertory.GetAllProfesseursAsync();
-            return professeur;
+            return professeurRepertory.GetAll();
         }
 
-        public async Task<Professeur> GetProfesseurByIdAsync(int id)
+        public Task<Professeur> GetById(int id)
         {
-            var professeur = await professeurRepertory.GetProfesseurByIdAsync(id);
-            return professeur;
+            return professeurRepertory.GetById( id );
         }
 
-        public async Task<Professeur> GetProfesseurDetailsByNomAsync(string nom)
+        public async Task Update(Professeur professeur)
         {
-            // Appeler le repository pour obtenir les détails du professeur
-            var professeur = await professeurRepertory.GetProfesseurDetailsByNomAsync(nom);
-
-            if (professeur == null)
-            {
-                // Si le professeur n'est pas trouvé, gérer l'exception ou retourner null
-                throw new Exception($"Aucun professeur trouvé avec le nom {nom}");
-            }
-
-            // Retourner le professeur avec toutes ses informations chargées
-            return professeur;
-        }
-
-
-        public async Task UpdateProfesseurAsync(Professeur professeur)
-        {
-           await professeurRepertory.UpdateProfesseurAsync(professeur);
+            await professeurRepertory.Update( professeur );
         }
     }
 }
