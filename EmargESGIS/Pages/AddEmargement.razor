@@ -1,0 +1,112 @@
+﻿@page "/AddEmargement"
+@using EmagApi.Core.Models
+@using EmagApi.Core.ServiceProvider.Interface
+@inject IEmargementServices emargementServices
+@inject IProfesseurServices professeurServices
+@inject IMatiereServices matiereServices
+@inject IFiliereServices filiereServices
+@inject ISiteServices siteServices
+@inject NavigationManager navigationManager
+
+<h3>Créer un nouvel émargement</h3>
+
+<div class="card p-4">
+    <EditForm Model="newEmargement" OnValidSubmit="CreateEmargement">
+        <DataAnnotationsValidator />
+
+        <!-- Sélection du professeur -->
+        <div class="mb-3">
+            <label class="form-label">Professeur</label>
+            <select class="form-control" @bind="newEmargement.ProfesseurId">
+                <option value="">-- Sélectionnez un professeur --</option>
+                @foreach (var prof in professeurs)
+                {
+                    <option value="@prof.Id">@prof.Nom</option>
+                }
+            </select>
+        </div>
+
+        <!-- Sélection de la matière -->
+        <div class="mb-3">
+            <label class="form-label">Matière</label>
+            <select class="form-control" @bind="newEmargement.MatiereId">
+                <option value="">-- Sélectionnez une matière --</option>
+                @foreach (var mat in matieres)
+                {
+                    <option value="@mat.Id">@mat.Nom</option>
+                }
+            </select>
+        </div>
+
+        <!-- Sélection de la filière -->
+        <div class="mb-3">
+            <label class="form-label">Filière</label>
+            <select class="form-control" @bind="newEmargement.FiliereId">
+                <option value="">-- Sélectionnez une filière --</option>
+                @foreach (var fil in filieres)
+                {
+                    <option value="@fil.Id">@fil.Nom</option>
+                }
+            </select>
+        </div>
+
+        <!-- Sélection du site -->
+        <div class="mb-3">
+            <label class="form-label">Site</label>
+            <select class="form-control" @bind="newEmargement.SiteId">
+                <option value="">-- Sélectionnez un site --</option>
+                @foreach (var s in sites)
+                {
+                    <option value="@s.Id">@s.Nom</option>
+                }
+            </select>
+        </div>
+
+        <!-- Date et heure -->
+        <div class="mb-3">
+            <label class="form-label">Début du cours</label>
+            <InputDate class="form-control" @bind-Value="newEmargement.HeureDebut" required />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Fin du cours</label>
+            <InputDate class="form-control" @bind-Value="newEmargement.HeureFin" required />
+        </div>
+
+        <button type="submit" class="btn btn-success">Créer</button>
+        <button type="button" class="btn btn-secondary ms-2" @onclick="Annuler">Annuler</button>
+    </EditForm>
+</div>
+
+@code {
+    private Emargement newEmargement = new Emargement();
+
+    private List<Professeur> professeurs = new();
+    private List<Matiere> matieres = new();
+    private List<Filiere> filieres = new();
+    private List<Site> sites = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDropdowns();
+    }
+
+    private async Task LoadDropdowns()
+    {
+        professeurs = await professeurServices.GetAll();
+        matieres = await matiereServices.GetAll();
+        filieres = await filiereServices.GetAll();
+        sites = await siteServices.GetAll();
+    }
+
+    private async Task CreateEmargement()
+    {
+        await emargementServices.Add(newEmargement);
+        navigationManager.NavigateTo("/GetAllEmargement");
+    }
+
+    private void Annuler()
+    {
+        navigationManager.NavigateTo("/GetAllEmargement");
+    }
+}

@@ -28,7 +28,7 @@ namespace EmagApi.Controllers
             return Ok(professeur);
         }
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
+        public async Task<IActionResult> GetProfesseurById(int id)
         {
             var professeur = await professeurServices.GetById(id);
             if (professeur == null)
@@ -37,13 +37,14 @@ namespace EmagApi.Controllers
             }
             return Ok(professeur);
         }
+
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody]AddProfesseurDto addProfesseurDto)
+        public async Task<IActionResult> Create([FromBody] AddProfesseurDto addProfesseurDto)
         {
-          var professeur = mapper.Map<Professeur>(addProfesseurDto);
+            var professeur = mapper.Map<Professeur>(addProfesseurDto);
             await professeurServices.Add(professeur);
-           // var createdProfesseur = await professeurServices.Add(professeur);
-            return CreatedAtAction(nameof(GetById), new { id = professeur.Id });
+            // var createdProfesseur = await professeurServices.Add(professeur);
+            return Ok("Creer avec succes");
         }
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] ProfesseurDto professeurDto)

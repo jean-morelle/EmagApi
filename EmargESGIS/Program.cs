@@ -1,6 +1,7 @@
 using EmagApi.Core.ServiceProvider;
 using EmagApi.Core.ServiceProvider.Interface;
 using EmargESGIS;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
@@ -12,6 +13,7 @@ builder.Services.AddScoped<IMatiereServices,MatiereServices>();
 builder.Services.AddScoped<IFiliereServices,FiliereServices>();
 builder.Services.AddScoped<ISiteServices,SiteServices>();
 builder.Services.AddScoped<IEmargementServices,EmargementServices>();
+builder.Services.AddAuthorizationCore();
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:7132") });
 

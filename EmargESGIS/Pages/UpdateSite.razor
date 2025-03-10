@@ -1,0 +1,100 @@
+﻿@page "/UpdateSite/{Id:int}"
+@using EmagApi.Core.Models
+@using EmagApi.Core.ServiceProvider.Interface
+
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        @if (isLoading)
+        {
+            <p>Chargement des données des matieres...</p>
+        }
+        else
+        {
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <div class="alert alert-danger">@errorMessage</div>
+            }
+
+            <EditForm Model="site" OnValidSubmit="UpdateSites">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="control-label">Nom du site</label>
+                                <InputText class="form-control" @bind-Value="@site.Nom" />
+                                <ValidationMessage For="@(() => site.Nom)" />
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label">Addresse du site</label>
+                                <InputText class="form-control" @bind-Value="@site.Adresse" />
+                                <ValidationMessage For="@(() => site.Adresse)" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group mt-3">
+                        <button type="submit" class="btn btn-primary" disabled="@isLoading">Enregistrer</button>
+                        <button type="button" @onclick="Cancel" class="btn btn-danger">Retour</button>
+                    </div>
+                </div>
+            </EditForm>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private Site site { get; set; } = new();
+    private bool isLoading = true;
+    private string errorMessage = string.Empty;
+
+    [Inject]
+    private NavigationManager navigationManager { get; set; } = default!;
+
+    [Inject]
+    private ISiteServices siteServices { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            if (siteServices is not null)
+            {
+                site = await siteServices.GetById(Id) ?? new Site();
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Erreur lors du chargement des données du site : {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task UpdateSites()
+    {
+        try
+        {
+            if (siteServices is not null)
+            {
+                await siteServices.Update(site);
+                navigationManager.NavigateTo("/GetAllSite");
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Erreur lors de la mise à jour du site : {ex.Message}";
+        }
+    }
+
+    private void Cancel()
+    {
+        navigationManager.NavigateTo("/GetAllSite");
+    }
+}

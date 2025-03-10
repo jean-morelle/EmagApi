@@ -22,6 +22,35 @@ namespace EmagApi.Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("EmagApi.Domain.Models.Admin", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Nom")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("Nom-D-Utilisateur");
+
+                    b.Property<string>("PassWord")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("Mot-de-passe");
+
+                    b.Property<string>("Role")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)")
+                        .HasColumnName("Role");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Admins");
+                });
+
             modelBuilder.Entity("EmagApi.Domain.Models.Emargement", b =>
                 {
                     b.Property<int>("Id")
@@ -58,7 +87,7 @@ namespace EmagApi.Infrastructure.Migrations
 
                     b.HasIndex("SiteId");
 
-                    b.ToTable("Emargement");
+                    b.ToTable("Emargements");
                 });
 
             modelBuilder.Entity("EmagApi.Domain.Models.Filiere", b =>
@@ -71,11 +100,12 @@ namespace EmagApi.Infrastructure.Migrations
 
                     b.Property<string>("Nom")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Filiere");
+                    b.ToTable("Filieres");
                 });
 
             modelBuilder.Entity("EmagApi.Domain.Models.Matiere", b =>
@@ -92,7 +122,7 @@ namespace EmagApi.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Matiere");
+                    b.ToTable("Matieres");
                 });
 
             modelBuilder.Entity("EmagApi.Domain.Models.Professeur", b =>
@@ -109,7 +139,8 @@ namespace EmagApi.Infrastructure.Migrations
 
                     b.Property<string>("Nom")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
 
@@ -134,7 +165,7 @@ namespace EmagApi.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Site");
+                    b.ToTable("Sites");
                 });
 
             modelBuilder.Entity("EmagApi.Domain.Models.Emargement", b =>
@@ -142,25 +173,25 @@ namespace EmagApi.Infrastructure.Migrations
                     b.HasOne("EmagApi.Domain.Models.Filiere", "Filiere")
                         .WithMany("Emargements")
                         .HasForeignKey("FiliereId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("EmagApi.Domain.Models.Matiere", "Matiere")
                         .WithMany("Emargements")
                         .HasForeignKey("MatiereId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("EmagApi.Domain.Models.Professeur", "Professeur")
                         .WithMany("Emargements")
                         .HasForeignKey("ProfesseurId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("EmagApi.Domain.Models.Site", "Site")
                         .WithMany("Emargements")
                         .HasForeignKey("SiteId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Filiere");

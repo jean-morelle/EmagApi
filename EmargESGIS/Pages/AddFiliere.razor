@@ -1,0 +1,52 @@
+﻿@page "/AddFiliere"
+@using EmagApi.Core.ServiceProvider.Interface
+@using EmagApi.Core.Models
+@inject IFiliereServices filiereServices
+@inject NavigationManager navigationManager
+
+<div class="container mt-5">
+    <div class="card shadow-lg p-4">
+        <h3 class="text-center mb-4">Ajouter une Matiere</h3>
+
+        <EditForm Model="filiere" OnValidSubmit="SaveFiliere">
+            <DataAnnotationsValidator />
+            <ValidationSummary class="alert alert-danger" />
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Nom du filiere</label>
+                <InputText class="form-control" @bind-Value="filiere.Nom" placeholder="Entrez le nom du filiere..." />
+                <ValidationMessage For="@(() => filiere.Nom)" class="text-danger" />
+            </div>
+            <div class="d-flex justify-content-between mt-4">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Enregistrer
+                </button>
+                <button type="button" class="btn btn-secondary" @onclick="Cancel">
+                    <i class="fas fa-times"></i> Annuler
+                </button>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    private Filiere filiere { get; set; } = new();
+
+    private async Task SaveFiliere()
+    {
+        try
+        {
+            await filiereServices.Add(filiere);
+            navigationManager.NavigateTo("/GetAllFiliere");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erreur lors de l'ajout du filiere : {ex.Message}");
+        }
+    }
+
+    private void Cancel()
+    {
+        navigationManager.NavigateTo("/GetAllFiliere");
+    }
+}

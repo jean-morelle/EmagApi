@@ -18,9 +18,9 @@ namespace EmagApi.Core.ServiceProvider
             this.httpClient = httpClient;
         }
 
-        public async Task<IEnumerable<Emargement>> GetAll()
+        public async Task<List<Emargement>> GetAll()
         {
-            return await httpClient.GetFromJsonAsync<IEnumerable<Emargement>>(EmargementUri);
+            return await httpClient.GetFromJsonAsync<List<Emargement>>(EmargementUri);
         }
 
         public async Task<Emargement> GetById(int id)

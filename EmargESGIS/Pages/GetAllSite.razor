@@ -1,0 +1,146 @@
+﻿@page "/GetAllSite"
+@using EmagApi.Core.Models
+@using EmagApi.Core.ServiceProvider.Interface
+<div class="container my-4">
+    <div class="row">
+        <div class="col-12 text-end mb-4">
+            <button class="btn btn-success" @onclick="AddNewSite">Ajouter le site</button>
+        </div>
+
+        <div class="col-12 mb-4">
+            <input type="text" class="form-control" placeholder="Rechercher le site par nom..."
+                   @bind="searchQuery" @oninput="SearchSite" />
+        </div>
+
+        <div class="col-12">
+            @if (FilteredSite == null)
+            {
+                <p><em>Chargement des sites...</em></p>
+            }
+            else if (!FilteredSite.Any())
+            {
+                <div class="alert alert-info">Aucune site trouvé.</div>
+            }
+            else
+            {
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Liste des Sites</h5>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Nom du Site</th>
+                                    <th class="text-end">Action</th>
+                                    @* <th class="text-end">Supprimer</th> *@
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var site in FilteredSite)
+                                {
+                                    <tr>
+                                        <td>@site.Nom</td>
+
+                                        <td class="text-end">
+                                            <button class="btn btn-warning" @onclick="() => EditSite(site.Id)">
+                                                Modifier
+                                            </button>
+                                            <button class="btn btn-danger" @onclick="() => DeleteSite(site.Id)">
+                                                Supprimer
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+
+                        <div class="d-flex justify-content-between align-items-center">
+                            <button class="btn btn-secondary" @onclick="PreviousPage" disabled="@(CurrentPage == 1)">Précédent</button>
+                            <span>Page @CurrentPage sur @TotalPages</span>
+                            <button class="btn btn-primary" @onclick="NextPage" disabled="@(CurrentPage == TotalPages)">Suivant</button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<Site> AllSite { get; set; } = new();
+    private List<Site> FilteredSite => AllSite
+        .Where(p => string.IsNullOrEmpty(searchQuery) || p.Nom.Contains(searchQuery, StringComparison.OrdinalIgnoreCase))
+        .Skip((CurrentPage - 1) * PageSize)
+        .Take(PageSize)
+        .ToList();
+    private int CurrentPage { get; set; } = 1;
+    private int PageSize { get; set; } = 5;
+    private int TotalPages => (int)Math.Ceiling((double)AllSite.Count / PageSize);
+
+    private string searchQuery = string.Empty;
+
+    [Inject]
+    public ISiteServices siteServices { get; set; }
+
+    [Inject]
+    private IJSRuntime JS { get; set; } = default!;
+
+    [Inject]
+    private NavigationManager? navigationManager { get; set; }
+
+    private void AddNewSite()
+    {
+        navigationManager?.NavigateTo("/AddSite");
+    }
+
+    private void EditSite(int id)
+    {
+        navigationManager?.NavigateTo($"/UpdateSite/{id}");
+    }
+
+    private async Task DeleteSite(int id)
+    {
+        var confirmed = await JS.InvokeAsync<bool>("confirm", "Voulez-vous vraiment supprimer cette site ?");
+        if (confirmed)
+        {
+            await siteServices.Delete(id);
+            await LoadSites();
+        }
+    }
+
+    private async Task LoadSites()
+    {
+        if (siteServices is not null)
+        {
+            AllSite = await siteServices.GetAll();
+            CurrentPage = 1;
+        }
+    }
+
+    private void NextPage()
+    {
+        if (CurrentPage < TotalPages)
+        {
+            CurrentPage++;
+        }
+    }
+
+    private void PreviousPage()
+    {
+        if (CurrentPage > 1)
+        {
+            CurrentPage--;
+        }
+    }
+
+    private void SearchSite()
+    {
+        CurrentPage = 1;  // Reset to first page when performing search
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadSites();
+    }
+}

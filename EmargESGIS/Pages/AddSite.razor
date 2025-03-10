@@ -1,0 +1,57 @@
+﻿@page "/AddSite"
+@using EmagApi.Core.ServiceProvider.Interface
+@using EmagApi.Core.Models
+@inject ISiteServices SiteServices
+@inject NavigationManager navigationManager
+
+<div class="container mt-5">
+    <div class="card shadow-lg p-4">
+        <h3 class="text-center mb-4">Ajouter une Site</h3>
+
+        <EditForm Model="site" OnValidSubmit="SaveSite">
+            <DataAnnotationsValidator />
+            <ValidationSummary class="alert alert-danger" />
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Nom du site</label>
+                <InputText class="form-control" @bind-Value="site.Nom" placeholder="Entrez le nom du site..." />
+                <ValidationMessage For="@(() => site.Nom)" class="text-danger" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-bold">Addresse du site</label>
+                <InputText class="form-control" @bind-Value="site.Adresse" placeholder="Entrez l addresse du site..." />
+                <ValidationMessage For="@(() => site.Adresse)" class="text-danger" />
+            </div>
+            <div class="d-flex justify-content-between mt-4">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Enregistrer
+                </button>
+                <button type="button" class="btn btn-secondary" @onclick="Cancel">
+                    <i class="fas fa-times"></i> Annuler
+                </button>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    private Site site { get; set; } = new();
+
+    private async Task SaveSite()
+    {
+        try
+        {
+            await SiteServices.Add(site);
+            navigationManager.NavigateTo("/GetAllSite");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erreur lors de l'ajout du site : {ex.Message}");
+        }
+    }
+
+    private void Cancel()
+    {
+        navigationManager.NavigateTo("/GetAllSite");
+    }
+}

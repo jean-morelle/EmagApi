@@ -1,0 +1,95 @@
+﻿@page "/UpdateMatiere/{Id:int}"
+@using EmagApi.Core.Models
+@using EmagApi.Core.ServiceProvider.Interface
+
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        @if (isLoading)
+        {
+            <p>Chargement des données des matieres...</p>
+        }
+        else
+        {
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <div class="alert alert-danger">@errorMessage</div>
+            }
+
+            <EditForm Model="matiere" OnValidSubmit="UpdateMatieres">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="control-label">Nom du matiere</label>
+                                <InputText class="form-control" @bind-Value="@matiere.Nom" />
+                                <ValidationMessage For="@(() => matiere.Nom)" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group mt-3">
+                        <button type="submit" class="btn btn-primary" disabled="@isLoading">Enregistrer</button>
+                        <button type="button" @onclick="Cancel" class="btn btn-danger">Retour</button>
+                    </div>
+                </div>
+            </EditForm>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private Matiere matiere { get; set; } = new();
+    private bool isLoading = true;
+    private string errorMessage = string.Empty;
+
+    [Inject]
+    private NavigationManager navigationManager { get; set; } = default!;
+
+    [Inject]
+    private IMatiereServices matiereServices { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            if (matiereServices is not null)
+            {
+                matiere = await matiereServices.GetById(Id) ?? new Matiere();
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Erreur lors du chargement des données des matieres : {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task UpdateMatieres()
+    {
+        try
+        {
+            if (matiereServices is not null)
+            {
+                await matiereServices.Update(matiere);
+                navigationManager.NavigateTo("/GetAllMatiere");
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Erreur lors de la mise à jour du matiere : {ex.Message}";
+        }
+    }
+
+    private void Cancel()
+    {
+        navigationManager.NavigateTo("/GetAllMatiere");
+    }
+}

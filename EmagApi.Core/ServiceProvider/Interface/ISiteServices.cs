@@ -9,7 +9,7 @@ namespace EmagApi.Core.ServiceProvider.Interface
 {
     public interface ISiteServices
     {
-        Task<IEnumerable<Site>> GetAll();
+        Task<List<Site>> GetAll();
         Task<Site> GetById(int id);
         Task Add(Site site);
         Task Update(Site site);

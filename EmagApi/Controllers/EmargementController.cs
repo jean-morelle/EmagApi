@@ -3,6 +3,7 @@ using EmagApi.Application.Dtos;
 using EmagApi.Application.Services;
 using EmagApi.Domain.Interface;
 using EmagApi.Domain.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,6 +21,7 @@ namespace EmagApi.Controllers
             this.emargementServices = emargementServices;
             this.mapper = mapper;
         }
+
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {

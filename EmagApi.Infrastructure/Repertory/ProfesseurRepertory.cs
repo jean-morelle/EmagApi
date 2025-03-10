@@ -22,7 +22,7 @@ namespace EmagApi.Infrastructure.Repertory
 
         public async Task Add(Professeur professeur)
         {
-          dbContext.Professeurs.Add(professeur);
+            dbContext.Professeurs.Add(professeur);
             await dbContext.SaveChangesAsync();
            
         }

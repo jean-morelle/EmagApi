@@ -18,6 +18,7 @@ namespace EmagApi.Infrastructure.DataAccess
         public DbSet<Filiere> Filieres { get; set; }
         public DbSet<Site> Sites { get; set; }
         public DbSet<Emargement> Emargements { get; set; }
+        public DbSet<Admin> Admins { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

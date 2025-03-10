@@ -1,0 +1,146 @@
+﻿@page "/GetAllFiliere"
+@using EmagApi.Core.Models
+@using EmagApi.Core.ServiceProvider.Interface
+<div class="container my-4">
+    <div class="row">
+        <div class="col-12 text-end mb-4">
+            <button class="btn btn-success" @onclick="AddNewFiliere">Ajouter une filiere</button>
+        </div>
+
+        <div class="col-12 mb-4">
+            <input type="text" class="form-control" placeholder="Rechercher une filiere par nom..."
+                   @bind="searchQuery" @oninput="SearchFiliere" />
+        </div>
+
+        <div class="col-12">
+            @if ( FilteredFilieres== null)
+            {
+                <p><em>Chargement des filieres...</em></p>
+            }
+            else if (!FilteredFilieres.Any())
+            {
+                <div class="alert alert-info">Aucune Filiere trouvé.</div>
+            }
+            else
+            {
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Liste des Filiere</h5>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Nom du Filiere</th>
+                                    <th class="text-end">Action</th>
+                                    @* <th class="text-end">Supprimer</th> *@
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var filiere in FilteredFilieres)
+                                {
+                                    <tr>
+                                        <td>@filiere.Nom</td>
+
+                                        <td class="text-end">
+                                            <button class="btn btn-warning" @onclick="() => EditFiliere(filiere.Id)">
+                                                Modifier
+                                            </button>
+                                            <button class="btn btn-danger" @onclick="() => DeleteFiliere(filiere.Id)">
+                                                Supprimer
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+
+                        <div class="d-flex justify-content-between align-items-center">
+                            <button class="btn btn-secondary" @onclick="PreviousPage" disabled="@(CurrentPage == 1)">Précédent</button>
+                            <span>Page @CurrentPage sur @TotalPages</span>
+                            <button class="btn btn-primary" @onclick="NextPage" disabled="@(CurrentPage == TotalPages)">Suivant</button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<Filiere> AllFiliere { get; set; } = new();
+    private List<Filiere> FilteredFilieres => AllFiliere
+        .Where(p => string.IsNullOrEmpty(searchQuery) || p.Nom.Contains(searchQuery, StringComparison.OrdinalIgnoreCase))
+        .Skip((CurrentPage - 1) * PageSize)
+        .Take(PageSize)
+        .ToList();
+    private int CurrentPage { get; set; } = 1;
+    private int PageSize { get; set; } = 5;
+    private int TotalPages => (int)Math.Ceiling((double)AllFiliere.Count / PageSize);
+
+    private string searchQuery = string.Empty;
+
+    [Inject]
+    public IFiliereServices filiereServices { get; set; }
+
+    [Inject]
+    private IJSRuntime JS { get; set; } = default!;
+
+    [Inject]
+    private NavigationManager? navigationManager { get; set; }
+
+    private void AddNewFiliere()
+    {
+        navigationManager?.NavigateTo("/AddFiliere");
+    }
+
+    private void EditFiliere(int id)
+    {
+        navigationManager?.NavigateTo($"/UpdateFiliere/{id}");
+    }
+
+    private async Task DeleteFiliere(int id)
+    {
+        var confirmed = await JS.InvokeAsync<bool>("confirm", "Voulez-vous vraiment supprimer cette filiere ?");
+        if (confirmed)
+        {
+            await filiereServices.Delete(id);
+            await LoadFilieres();
+        }
+    }
+
+    private async Task LoadFilieres()
+    {
+        if (filiereServices is not null)
+        {
+            AllFiliere = await filiereServices.GetAll();
+            CurrentPage = 1;
+        }
+    }
+
+    private void NextPage()
+    {
+        if (CurrentPage < TotalPages)
+        {
+            CurrentPage++;
+        }
+    }
+
+    private void PreviousPage()
+    {
+        if (CurrentPage > 1)
+        {
+            CurrentPage--;
+        }
+    }
+
+    private void SearchFiliere()
+    {
+        CurrentPage = 1;  // Reset to first page when performing search
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadFilieres();
+    }
+}

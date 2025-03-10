@@ -43,7 +43,18 @@ namespace EmagApi.Core.ServiceProvider
         public async Task Delete(int id)
         {
             var response = await httpClient.DeleteAsync($"{MatiereUri}/{id}");
-            response.EnsureSuccessStatusCode();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                // Log the response status and content for debugging
+                var errorContent = await response.Content.ReadAsStringAsync();
+                Console.Error.WriteLine($"Error deleting matiere with ID {id}. Status code: {response.StatusCode}, Response: {errorContent}");
+
+                // You can also throw an exception if needed
+                throw new HttpRequestException($"Failed to delete matiere. Status code: {response.StatusCode}, Response: {errorContent}");
+            }
+
+            response.EnsureSuccessStatusCode(); // EnsureSuccessStatusCode will throw if it's not a success status code
         }
     }
 }
