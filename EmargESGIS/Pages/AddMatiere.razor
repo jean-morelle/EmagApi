@@ -37,7 +37,7 @@
         try
         {
             await matiereServices.Add(matiere);
-            navigationManager.NavigateTo("/GetAllMatiere");
+            navigationManager.NavigateTo("/ProfesseurDashboard");
         }
         catch (Exception ex)
         {
@@ -47,6 +47,6 @@
 
     private void Cancel()
     {
-        navigationManager.NavigateTo("/GetAllMatiere");
+        navigationManager.NavigateTo("/ProfesseurDashboard");
     }
 }

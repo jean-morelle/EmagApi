@@ -37,7 +37,7 @@
         try
         {
             await filiereServices.Add(filiere);
-            navigationManager.NavigateTo("/GetAllFiliere");
+            navigationManager.NavigateTo("/ProfesseurDashboard");
         }
         catch (Exception ex)
         {
@@ -47,6 +47,6 @@
 
     private void Cancel()
     {
-        navigationManager.NavigateTo("/GetAllFiliere");
+        navigationManager.NavigateTo("/ProfesseurDashboard");
     }
 }

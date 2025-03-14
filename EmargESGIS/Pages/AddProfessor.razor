@@ -43,7 +43,7 @@
         try
         {
             await professeurService.Add(professeur);
-            navigationManager.NavigateTo("/GetAllProfessor");
+            navigationManager.NavigateTo("/ProfesseurDashboard");
         }
         catch (Exception ex)
         {
@@ -53,7 +53,7 @@
 
     private void Cancel()
     {
-        navigationManager.NavigateTo("/GetAllProfessor");
+        navigationManager.NavigateTo("/ProfesseurDashboard");
     }
 }
 

@@ -1,0 +1,234 @@
+﻿@page "/ProfesseurDashboard"
+@using EmagApi.Core.Models
+@using EmagApi.Core.ServiceProvider.Interface
+@inject IJSRuntime JS
+@* @inject NavigationManager navigationManager *@
+
+<h3 class="dashboard-title">Tableau de Bord</h3>
+
+<div class="dashboard-container">
+    <NavLink href="/GetAllProfessor" class="container container-professor">
+        <span class="icon">👨‍🏫</span> Liste des Professeurs
+    </NavLink>
+    <NavLink href="/GetAllMatiere" class="container container-statistics">
+        <span class="icon">📚</span> Liste des Matières
+    </NavLink>
+    <NavLink href="/GetAllFiliere" class="container container-settings">
+        <span class="icon">🏫</span> Liste des Filières
+    </NavLink>
+    <NavLink href="/GetAllSite" class="container container-site">
+        <span class="icon">🌍</span> Liste des Sites
+    </NavLink>
+</div>
+
+<div class="container my-4">
+    <div class="row">
+        <div class="col-12 text-end mb-4">
+            <button class="btn btn-success" @onclick="AddNewEmargement">Ajouter un émargement</button>
+            <button class="btn btn-primary" @onclick="ToggleDarkMode">Mode Sombre</button>
+        </div>
+
+        <div class="col-12">
+            @if (FilteredEmargement == null)
+            {
+                <p><em>Chargement des émargements...</em></p>
+            }
+            else if (!FilteredEmargement.Any())
+            {
+                <div class="alert alert-info">Aucun émargement trouvé.</div>
+            }
+            else
+            {
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Liste des Émargements</h5>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Nom du professeur</th>
+                                    <th>Matière</th>
+                                    <th>Filière</th>
+                                    <th>Site</th>
+                                    <th>Durée du cours</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var emargement in FilteredEmargement)
+                                {
+                                    <tr>
+                                        <td>@emargement.Professeur.Nom</td>
+                                        <td>@emargement.Matiere.Nom</td>
+                                        <td>@emargement.Filiere.Nom</td>
+                                        <td>@emargement.Site.Nom</td>
+                                        <td>@ConvertirDuree(emargement.GetDuree())</td>
+                                        <td class="text-end">
+                                            <button class="btn btn-warning" @onclick="() => EditEmargement(emargement.Id)">Modifier</button>
+                                            <button class="btn btn-danger" @onclick="() => DeleteEmargement(emargement.Id)">Supprimer</button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+
+                        <div class="d-flex justify-content-between align-items-center">
+                            <button class="btn btn-secondary" @onclick="PreviousPage" disabled="@(CurrentPage == 1)">Précédent</button>
+                            <span>Page @CurrentPage sur @TotalPages</span>
+                            <button class="btn btn-primary" @onclick="NextPage" disabled="@(CurrentPage == TotalPages)">Suivant</button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    body.dark-mode {
+        background-color: #121212;
+        color: #e0e0e0; /* Texte clair */
+    }
+
+    body.dark-mode .dashboard-title {
+        color: #f0f0f0; /* Titre en couleur claire */
+    }
+
+    body.dark-mode .card {
+        background-color: #333; /* Fond sombre */
+        color: #e0e0e0; /* Texte clair */
+    }
+
+    body.dark-mode .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+
+    body.dark-mode .btn-secondary {
+        background-color: #4e4e4e;
+        border-color: #333;
+    }
+
+    body.dark-mode .table {
+        background-color: #222; /* Fond sombre pour le tableau */
+    }
+
+    body.dark-mode .table th,
+    body.dark-mode .table td {
+        color: #e0e0e0; /* Texte clair dans le tableau */
+    }
+
+    body.dark-mode .table-striped tbody tr:nth-child(odd) {
+        background-color: #2c2c2c; /* Lignes alternées sombres */
+    }
+
+    body.dark-mode .container {
+        background-color: #2e2e2e; /* Conteneur sombre */
+    }
+</style>
+
+@code {
+    private List<Emargement> AllEmargement { get; set; } = new();
+    private List<Emargement> FilteredEmargement => AllEmargement
+        .Skip((CurrentPage - 1) * PageSize)
+        .Take(PageSize)
+        .ToList();
+
+    private int CurrentPage { get; set; } = 1;
+    private int PageSize { get; set; } = 5;
+    private int TotalPages => (int)Math.Ceiling((double)AllEmargement.Count / PageSize);
+    private bool isDarkMode { get; set; } = false;
+
+    [Inject]
+    public IEmargementServices emargementServices { get; set; } = default!;
+
+    [Inject]
+    private NavigationManager? navigationManager { get; set; }
+
+    private void AddNewEmargement()
+    {
+        navigationManager?.NavigateTo("/AddEmargement");
+    }
+
+    private void EditEmargement(int id)
+    {
+        navigationManager?.NavigateTo($"/UpdateEmargement/{id}");
+    }
+
+    private async Task DeleteEmargement(int id)
+    {
+        var confirmed = await JS.InvokeAsync<bool>("confirm", "Voulez-vous vraiment supprimer cet émargement ?");
+        if (confirmed)
+        {
+            await emargementServices.Delete(id);
+            await LoadEmargement();
+        }
+    }
+
+    private async Task LoadEmargement()
+    {
+        if (emargementServices is not null)
+        {
+            AllEmargement = await emargementServices.GetAll();
+            CurrentPage = 1;
+        }
+    }
+
+    private void NextPage()
+    {
+        if (CurrentPage < TotalPages)
+        {
+            CurrentPage++;
+        }
+    }
+
+    private void PreviousPage()
+    {
+        if (CurrentPage > 1)
+        {
+            CurrentPage--;
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadEmargement();
+
+        // Vérification du mode sombre lors de l'initialisation
+        var darkModePreference = await JS.InvokeAsync<string>("localStorage.getItem", "darkMode");
+        if (darkModePreference == "true")
+        {
+            isDarkMode = true;
+            await JS.InvokeVoidAsync("document.body.classList.add", "dark-mode");
+        }
+    }
+
+    private async Task ToggleDarkMode()
+    {
+        isDarkMode = !isDarkMode;
+
+        if (isDarkMode)
+        {
+            await JS.InvokeVoidAsync("document.body.classList.add", "dark-mode");
+            await JS.InvokeVoidAsync("localStorage.setItem", "darkMode", "true");
+        }
+        else
+        {
+            await JS.InvokeVoidAsync("document.body.classList.remove", "dark-mode");
+            await JS.InvokeVoidAsync("localStorage.setItem", "darkMode", "false");
+        }
+    }
+
+    private string ConvertirDuree(TimeSpan duree)
+    {
+        int heures = duree.Hours;
+        int minutes = duree.Minutes;
+
+        if (heures > 0 && minutes > 0)
+            return $"{heures}h {minutes}min";
+        if (heures > 0)
+            return $"{heures}h";
+        return $"{minutes}min";
+    }
+}

@@ -79,7 +79,7 @@
             if (matiereServices is not null)
             {
                 await matiereServices.Update(matiere);
-                navigationManager.NavigateTo("/GetAllMatiere");
+                navigationManager.NavigateTo("/ProfesseurDashboard");
             }
         }
         catch (Exception ex)
@@ -90,6 +90,6 @@
 
     private void Cancel()
     {
-        navigationManager.NavigateTo("/GetAllMatiere");
+        navigationManager.NavigateTo("/ProfesseurDashboard");
     }
 }

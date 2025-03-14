@@ -79,7 +79,7 @@
             if (filiereServices is not null)
             {
                 await filiereServices.Update(filiere);
-                navigationManager.NavigateTo("/GetAllFiliere");
+                navigationManager.NavigateTo("/ProfesseurDashboard");
             }
         }
         catch (Exception ex)
@@ -90,6 +90,6 @@
 
     private void Cancel()
     {
-        navigationManager.NavigateTo("/GetAllFiliere");
+        navigationManager.NavigateTo("/ProfesseurDashboard");
     }
 }

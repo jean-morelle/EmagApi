@@ -42,7 +42,7 @@
         try
         {
             await SiteServices.Add(site);
-            navigationManager.NavigateTo("/GetAllSite");
+            navigationManager.NavigateTo("/ProfesseurDashboard");
         }
         catch (Exception ex)
         {
@@ -52,6 +52,6 @@
 
     private void Cancel()
     {
-        navigationManager.NavigateTo("/GetAllSite");
+        navigationManager.NavigateTo("/ProfesseurDashboard");
     }
 }

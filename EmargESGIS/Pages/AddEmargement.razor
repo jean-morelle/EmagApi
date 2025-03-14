@@ -102,11 +102,11 @@
     private async Task CreateEmargement()
     {
         await emargementServices.Add(newEmargement);
-        navigationManager.NavigateTo("/GetAllEmargement");
+        navigationManager.NavigateTo("/ProfesseurDashboard");
     }
 
     private void Annuler()
     {
-        navigationManager.NavigateTo("/GetAllEmargement");
+        navigationManager.NavigateTo("/ProfesseurDashboard");
     }
 }

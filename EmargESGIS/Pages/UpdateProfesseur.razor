@@ -86,7 +86,7 @@
             if (professeurService is not null)
             {
                 await professeurService.Update(professeur);
-                navigationManager.NavigateTo("/GetAllProfessor");
+                navigationManager.NavigateTo("/ProfesseurDashboard");
             }
         }
         catch (Exception ex)
@@ -97,6 +97,6 @@
 
     private void Cancel()
     {
-        navigationManager.NavigateTo("/GetAllProfessor");
+        navigationManager.NavigateTo("/ProfesseurDashboard");
     }
 }

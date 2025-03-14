@@ -122,11 +122,11 @@ else
     private async Task UpdateEmargements()
     {
         await emargementServices.Update(updateEmargement);
-        navigationManager.NavigateTo("/GetAllEmargement");
+        navigationManager.NavigateTo("/ProfesseurDashboard");
     }
 
     private void Annuler()
     {
-        navigationManager.NavigateTo("/GetAllEmargement");
+        navigationManager.NavigateTo("/ProfesseurDashboard");
     }
 }
